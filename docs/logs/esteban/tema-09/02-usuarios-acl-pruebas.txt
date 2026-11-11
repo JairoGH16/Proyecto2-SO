@@ -1,0 +1,82 @@
+### Usuarios, grupos y ACL - Tue Nov 10 23:56:53 CST 2026
+
+$ bash setup-usuarios-acl.sh   (1ra ejecucion)
+[T9] Grupos
+  creado grupo arenalos-ops
+  creado grupo arenalos-datos
+  creado grupo arenalos-ssh
+[T9] Usuarios
+  creado usuario operador
+  creado usuario auditor
+  creado usuario invitado
+[T9] Directorio compartido /srv/arenalos/compartido
+# file: /srv/arenalos/compartido
+# owner: root
+# group: arenalos-datos
+# flags: -s-
+user::rwx
+user:auditor:r-x
+group::rwx
+mask::rwx
+other::---
+default:user::rwx
+default:user:auditor:r-x
+default:group::rwx
+default:group:arenalos-datos:rwx
+default:mask::rwx
+default:other::---
+
+[T9] Usuarios y ACL listos
+
+$ bash setup-usuarios-acl.sh   (2da ejecucion: idempotencia, no crea nada nuevo)
+[T9] Usuarios y ACL listos
+
+$ id user operador auditor invitado
+uid=1000(user) gid=1000(user) groups=1000(user),998(wheel),1003(arenalos-ssh)
+uid=1001(operador) gid=1004(operador) groups=1004(operador),1001(arenalos-ops),1002(arenalos-datos)
+uid=1002(auditor) gid=1005(auditor) groups=1005(auditor),981(systemd-journal)
+uid=1003(invitado) gid=1006(invitado) groups=1006(invitado)
+
+$ getent passwd operador auditor invitado | cut -d: -f1,7   (shell)
+operador:/bin/bash
+auditor:/bin/bash
+invitado:/usr/bin/nologin
+$ passwd -S operador auditor invitado   (L = contrasena bloqueada)
+operador L
+auditor L
+invitado L
+
+$ ls -ld /srv/arenalos/compartido
+drwxrws---+ 2 root arenalos-datos 4096 Nov 10 23:56 /srv/arenalos/compartido
+
+########## PRUEBAS (runuser -u <usuario> -- <comando>) ##########
+operador  $ echo 'informe del operador' > /srv/arenalos/compartido/informe.txt -> OK (exit=0)
+operador  $ cat /srv/arenalos/compartido/informe.txt      -> informe del operador (exit=0)
+auditor   $ ls /srv/arenalos/compartido                   -> informe.txt (exit=0)
+auditor   $ cat /srv/arenalos/compartido/informe.txt      -> informe del operador (exit=0)
+--- pruebas NEGATIVAS (deben fallar) ---
+auditor   $ echo hack >> /srv/arenalos/compartido/informe.txt -> bash: line 1: /srv/arenalos/compartido/informe.txt: Permission denied (exit=1)
+auditor   $ touch /srv/arenalos/compartido/nuevo.txt      -> touch: cannot touch '/srv/arenalos/compartido/nuevo.txt': Permission denied (exit=1)
+auditor   $ rm /srv/arenalos/compartido/informe.txt       -> rm: cannot remove '/srv/arenalos/compartido/informe.txt': Permission denied (exit=1)
+invitado  $ ls /srv/arenalos/compartido                   -> ls: cannot open directory '/srv/arenalos/compartido': Permission denied (exit=2)
+invitado  $ cat /srv/arenalos/compartido/informe.txt      -> cat: /srv/arenalos/compartido/informe.txt: Permission denied (exit=1)
+user      $ ls /srv/arenalos/compartido                   -> ls: cannot open directory '/srv/arenalos/compartido': Permission denied (exit=2)
+
+$ ls -l /srv/arenalos/compartido   (el archivo nuevo hereda el grupo arenalos-datos por setgid)
+total 4
+-rw-rw----+ 1 operador arenalos-datos 21 Nov 10 23:56 informe.txt
+
+$ getfacl /srv/arenalos/compartido/informe.txt   (hereda la ACL por defecto)
+# file: /srv/arenalos/compartido/informe.txt
+# owner: operador
+# group: arenalos-datos
+user::rw-
+user:auditor:r-x	#effective:r--
+group::rwx	#effective:rw-
+group:arenalos-datos:rwx	#effective:rw-
+mask::rw-
+other::---
+
+$ su - invitado   (shell nologin)
+This account is currently not available.
+exit=0

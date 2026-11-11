@@ -1,0 +1,38 @@
+### nmap CON firewall (desde ArenalOS-scanner 10.10.10.2 -> 10.10.10.1) - Wed Nov 11 00:07:32 HAC 2026
+# En el objetivo SIGUEN escuchando sshd (22) y el servicio de prueba (8080)
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 1)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0035s latency).
+Not shown: 1024 filtered tcp ports (no-response)
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 6.24 seconds
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 2)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0040s latency).
+Not shown: 1024 filtered tcp ports (no-response)
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 6.44 seconds
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 3)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0031s latency).
+Not shown: 1024 filtered tcp ports (no-response)
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 6.85 seconds
+
+$ ping -c 3 10.10.10.1   (echo-request permitido con limite)
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 1.973/2.478/3.114/0.474 ms
+
+$ nc/ssh al 22 desde el escaner (TCP abierto)
+SSH-2.0-OpenSSH_10.6
+$ conexion al 8080 desde el escaner (debe colgarse: DROP sin respuesta)
+exit=124 (124 = timeout)

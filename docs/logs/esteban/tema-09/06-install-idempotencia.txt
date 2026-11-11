@@ -1,0 +1,29 @@
+### security/install.sh ejecutado dos veces seguidas - Wed Nov 11 00:07:09 HAC 2026
+
+$ sudo ./security/install.sh   (1ra)
+[T9] 1/4 Usuarios, grupos y directorio compartido con ACL
+  listo
+[T9] 2/4 sudoers restringido
+  sin cambios: /etc/sudoers.d/50-arenalos-ops
+[T9] 3/4 SSH endurecido
+  sin cambios: /etc/ssh/sshd_config.d/10-arenalos.conf
+[T9] 4/4 Firewall nftables
+  actualizado: /etc/systemd/system/nftables.service.d/10-arenalos.conf
+  sin cambios: /etc/nftables.conf
+[T9] Listo
+
+$ sudo ./security/install.sh   (2da: idempotencia)
+[T9] 1/4 Usuarios, grupos y directorio compartido con ACL
+  listo
+[T9] 2/4 sudoers restringido
+  sin cambios: /etc/sudoers.d/50-arenalos-ops
+[T9] 3/4 SSH endurecido
+  sin cambios: /etc/ssh/sshd_config.d/10-arenalos.conf
+[T9] 4/4 Firewall nftables
+  sin cambios: /etc/systemd/system/nftables.service.d/10-arenalos.conf
+  sin cambios: /etc/nftables.conf
+[T9] Listo
+
+$ systemctl is-active nftables sshd
+active
+active
