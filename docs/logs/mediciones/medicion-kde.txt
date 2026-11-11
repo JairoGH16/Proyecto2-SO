@@ -1,0 +1,12 @@
+Candidato: kde | Host: arenalos-jairo
+== free -m ==
+               total        used        free      shared  buff/cache   available
+Mem:            3889         832        2547          12         733        3057
+Swap:              0           0           0
+== procesos ==
+171
+== PSS total ==
+652 MB
+== disco (/) ==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3        15G  4.9G  9.1G  35% /

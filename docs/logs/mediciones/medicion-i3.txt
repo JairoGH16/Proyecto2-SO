@@ -1,0 +1,12 @@
+Candidato: i3 | Host: arenalos-jairo
+== free -m ==
+               total        used        free      shared  buff/cache   available
+Mem:            3889         426        3211          25         480        3463
+Swap:              0           0           0
+== procesos ==
+120
+== PSS total ==
+197 MB
+== disco (/) ==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3        15G  3.0G   11G  22% /
