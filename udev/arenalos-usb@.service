@@ -1,0 +1,19 @@
+# /etc/systemd/system/arenalos-usb@.service
+# ArenalOS · Tema 8 (E/S y dispositivos) · Responsable: Esteban
+#
+# Unidad plantilla: %I es el nombre del dispositivo (p. ej. sdb1).
+# La inicia udev mediante SYSTEMD_WANTS (ver 99-arenalos-usb.rules).
+#
+# BindsTo=dev-%i.device: el servicio queda "atado" al dispositivo; cuando la USB
+# se desconecta, systemd detiene el servicio y ExecStop desmonta y registra.
+
+[Unit]
+Description=ArenalOS: registrar y montar en solo lectura la USB %I
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/lib/arenalos/arenalos-usb-handler add %I
+ExecStop=/usr/local/lib/arenalos/arenalos-usb-handler remove %I
