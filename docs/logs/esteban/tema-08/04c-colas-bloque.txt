@@ -1,0 +1,4 @@
+sda: max_sectors_kb=4096 nr_requests=64 queue_depth=32 scheduler=none [mq-deadline] kyber bfq 
+sdb: max_sectors_kb=256 nr_requests=2 queue_depth=1 scheduler=none [mq-deadline] kyber bfq 
+transporte sdb: usb
+    |__ Port 001: Dev 002, If 0, Class=Mass Storage, Driver=usb-storage, 5000M

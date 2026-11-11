@@ -1,0 +1,43 @@
+### Desconexion de la USB - Tue Nov 10 23:45:05 CST 2026
+
+$ dmesg (durante la desconexion)
+[  865.177526] usb 3-1: USB disconnect, device number 2
+
+$ udevadm monitor --kernel --udev (remove)
+KERNEL[865.146854] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/bsg/2:0:0:0 (bsg)
+KERNEL[865.146908] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/scsi_device/2:0:0:0 (scsi_device)
+KERNEL[865.146918] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/scsi_disk/2:0:0:0 (scsi_disk)
+KERNEL[865.148345] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1 (block)
+KERNEL[865.149951] remove   /devices/virtual/bdi/8:16 (bdi)
+KERNEL[865.182836] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb (block)
+KERNEL[865.182911] unbind   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0 (scsi)
+KERNEL[865.182933] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0 (scsi)
+KERNEL[865.182952] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0 (scsi)
+KERNEL[865.198920] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/scsi_host/host2 (scsi_host)
+KERNEL[865.198960] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2 (scsi)
+KERNEL[865.200276] unbind   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0 (usb)
+KERNEL[865.200364] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0 (usb)
+KERNEL[865.209739] unbind   /devices/pci0000:00/0000:00:0c.0/usb3/3-1 (usb)
+KERNEL[865.209820] remove   /devices/pci0000:00/0000:00:0c.0/usb3/3-1 (usb)
+KERNEL[865.401522] remove   /devices/virtual/workqueue/scsi_tmf_2 (workqueue)
+
+$ systemctl status arenalos-usb@sdb1.service
+○ arenalos-usb@sdb1.service - ArenalOS: registrar y montar en solo lectura la USB sdb1
+     Loaded: loaded (/etc/systemd/system/arenalos-usb@.service; static)
+     Active: inactive (dead)
+
+Nov 10 23:34:26 arenalos-esteban systemd[1]: Starting ArenalOS: registrar y montar en solo lectura la USB sdb1...
+Nov 10 23:34:27 arenalos-esteban arenalos-usb-handler[552]: CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+Nov 10 23:34:27 arenalos-esteban arenalos-usb[557]: CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+Nov 10 23:34:27 arenalos-esteban systemd[1]: Finished ArenalOS: registrar y montar en solo lectura la USB sdb1.
+Nov 10 23:44:54 arenalos-esteban systemd[1]: Stopping ArenalOS: registrar y montar en solo lectura la USB sdb1...
+Nov 10 23:44:54 arenalos-esteban arenalos-usb-handler[1133]: DESCONECTADO sdb1 -> desmontado /media/usb-sdb1
+Nov 10 23:44:54 arenalos-esteban systemd[1]: arenalos-usb@sdb1.service: Deactivated successfully.
+Nov 10 23:44:54 arenalos-esteban systemd[1]: Stopped ArenalOS: registrar y montar en solo lectura la USB sdb1.
+
+$ ls -d /media/usb-sdb1
+ls: cannot access '/media/usb-sdb1': No such file or directory
+
+$ cat /var/log/arenalos-usb.log
+2026-11-10 23:34:27 CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+2026-11-10 23:44:54 DESCONECTADO sdb1 -> desmontado /media/usb-sdb1
