@@ -1,0 +1,113 @@
+sudo
+├─glibc
+│ ├─linux-api-headers>=4.10
+│ ├─tzdata
+│ └─filesystem
+│   └─iana-etc
+├─openssl
+│ ├─brotli
+│ │ └─glibc
+│ ├─glibc
+│ ├─zlib
+│ │ └─glibc
+│ └─zstd
+│   ├─glibc
+│   ├─libgcc
+│   │ └─glibc>=2.27
+│   ├─libstdc++
+│   │ ├─glibc>=2.27
+│   │ └─libgcc
+│   ├─zlib
+│   ├─xz
+│   │ ├─glibc
+│   │ └─bash provides sh
+│   │   ├─readline
+│   │   │ ├─glibc
+│   │   │ ├─ncurses provides libncursesw.so=6-64
+│   │   │ │ ├─glibc
+│   │   │ │ ├─libgcc
+│   │   │ │ └─libstdc++
+│   │   │ └─ncurses
+│   │   ├─readline provides libreadline.so=8-64
+│   │   ├─glibc
+│   │   └─ncurses
+│   └─lz4
+│     └─glibc
+├─pam
+│ ├─audit
+│ │ ├─bash
+│ │ ├─glibc
+│ │ ├─krb5
+│ │ │ ├─bash
+│ │ │ ├─e2fsprogs
+│ │ │ │ ├─bash provides sh
+│ │ │ │ └─util-linux-libs
+│ │ │ │   ├─glibc
+│ │ │ │   └─sqlite
+│ │ │ │     ├─readline
+│ │ │ │     ├─zlib
+│ │ │ │     └─glibc
+│ │ │ ├─glibc
+│ │ │ ├─keyutils
+│ │ │ │ ├─glibc
+│ │ │ │ └─bash provides sh
+│ │ │ ├─libldap
+│ │ │ │ ├─glibc
+│ │ │ │ ├─libsasl
+│ │ │ │ │ ├─glibc
+│ │ │ │ │ ├─gdbm
+│ │ │ │ │ │ ├─glibc
+│ │ │ │ │ │ ├─bash provides sh
+│ │ │ │ │ │ ├─readline
+│ │ │ │ │ │ └─readline provides libreadline.so=8-64
+│ │ │ │ │ ├─gdbm provides libgdbm.so=6-64
+│ │ │ │ │ ├─openssl
+│ │ │ │ │ └─openssl provides libcrypto.so=4-64
+│ │ │ │ ├─libsasl provides libsasl2.so=3-64
+│ │ │ │ ├─openssl
+│ │ │ │ └─openssl provides libcrypto.so=4-64
+│ │ │ ├─libverto provides libverto-module-base
+│ │ │ │ ├─glibc
+│ │ │ │ └─libevent
+│ │ │ │   ├─glibc
+│ │ │ │   └─openssl
+│ │ │ ├─openssl
+│ │ │ ├─lmdb
+│ │ │ │ └─glibc
+│ │ │ ├─e2fsprogs provides libcom_err.so=2-64
+│ │ │ ├─keyutils provides libkeyutils.so=1-64
+│ │ │ ├─e2fsprogs provides libss.so=2-64
+│ │ │ └─libverto provides libverto.so=1-64
+│ │ ├─krb5 provides libkrb5.so=3-64
+│ │ ├─krb5 provides libgssapi_krb5.so=2-64
+│ │ ├─libcap-ng
+│ │ │ └─glibc
+│ │ └─libcap-ng provides libcap-ng.so=0-64
+│ ├─glibc
+│ ├─audit provides libaudit.so=1-64
+│ ├─libxcrypt provides libcrypt.so=2-64
+│ │ └─glibc
+│ ├─libnsl
+│ │ ├─glibc
+│ │ └─libtirpc
+│ │   ├─krb5
+│ │   └─glibc
+│ ├─libtirpc
+│ ├─libxcrypt
+│ ├─pambase
+│ └─systemd-libs
+│   ├─glibc
+│   ├─libgcc
+│   ├─libgcc provides libgcc_s.so=1-64
+│   ├─libgcrypt
+│   │ ├─libgpg-error
+│   │ │ ├─glibc
+│   │ │ └─bash provides sh
+│   │ └─glibc
+│   ├─lz4
+│   ├─xz
+│   └─zstd
+├─libldap
+├─zlib
+├─openssl provides libcrypto.so=4-64
+└─openssl provides libssl.so=4-64
