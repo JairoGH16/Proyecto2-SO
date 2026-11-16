@@ -1,0 +1,15 @@
+Politica del proceso RT (campo 41 de stat; 1 = FIFO): 1
+PROCESO            TICKS    %CPU    
+normal (nice 0)    50       5.0     
+tiempo real (FIFO) 942      95.0    
+sched_rt_runtime_us=950000 sched_rt_period_us=1000000
+Politica del proceso RT (campo 41 de stat; 1 = FIFO): 1
+PROCESO            TICKS    %CPU    
+normal (nice 0)    46       4.6     
+tiempo real (FIFO) 945      95.4    
+sched_rt_runtime_us=950000 sched_rt_period_us=1000000
+Politica del proceso RT (campo 41 de stat; 1 = FIFO): 1
+PROCESO            TICKS    %CPU    
+normal (nice 0)    51       5.1     
+tiempo real (FIFO) 946      94.9    
+sched_rt_runtime_us=950000 sched_rt_period_us=1000000
