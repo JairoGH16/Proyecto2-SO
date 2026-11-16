@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = ArenalOS: actualizando la lista de paquetes explicitos
+When = PostTransaction
+Exec = /bin/sh -c 'mkdir -p /var/lib/arenalos && /usr/bin/pacman -Qqe > /var/lib/arenalos/explicitos.txt'
