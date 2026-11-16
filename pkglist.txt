@@ -13,3 +13,8 @@ xorg-setxkbmap
 xfce4
 sddm
 ttf-dejavu
+
+# --- Temas 8 y 9 (E/S y dispositivos, protección y seguridad) ---
+# sshd para el endurecimiento de SSH y nft para el firewall (security/install.sh)
+openssh
+nftables
