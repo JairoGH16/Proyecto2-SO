@@ -1,0 +1,1 @@
+Arenal Volcano panorama. By Rhododendrites - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=157431895. Imagen reducida a 1920 px de ancho; la versión reducida también se distribuye bajo CC BY-SA 4.0.

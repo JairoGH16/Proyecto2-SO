@@ -1,0 +1,12 @@
+Candidato: xfce | Host: arenalos-jairo
+== free -m ==
+               total        used        free      shared  buff/cache   available
+Mem:            3889         539        3041           4         517        3350
+Swap:              0           0           0
+== procesos ==
+140
+== PSS total ==
+288 MB
+== disco (/) ==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda3        15G  3.2G   11G  23% /

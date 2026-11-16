@@ -1,0 +1,15 @@
+# pkglist.txt — paquetes de ArenalOS. Un paquete por línea.
+# Cada tema agrega los suyos bajo su propio comentario.
+
+# --- Base y herramientas ---
+git
+base-devel
+man-db
+
+# --- Escritorio (Fase 2) ---
+xorg-server
+xorg-xrandr
+xorg-setxkbmap
+xfce4
+sddm
+ttf-dejavu
