@@ -1,0 +1,155 @@
+== Experimento de memoria (sin-zram) == Tue Nov 17 02:00:07 PM CST 2026
+Carga: 4 workers, 7G en total, durante 60s
+
+-- Antes --
+               total        used        free      shared  buff/cache   available
+Mem:            3889         593        3319           5         189        3296
+Swap:           4095          18        4077
+NAME      TYPE SIZE  USED PRIO
+/swapfile file   4G 18.7M   10
+== ArenalOS · Tema 2 Memoria == 14:00:07
+
+-- Memoria física (MB) --
+  Total:   3889.9  Libre:   3312.6  Disponible:   3289.5  Cache:    164.7
+-- Swap (MB) --
+  Total:   4096.0  Usado:     18.7
+    /swapfile            file       usado=   18.7 MB  prioridad=10
+-- zram --
+  original=    0.0 MB  comprimido=    0.0 MB  ratio=0.00x
+-- Top 10 procesos por fallos de página mayores (majflt) --
+      PID  COMM                      minflt      majflt
+      425  Xorg                       19478         795
+      539  xfwm4                       9716         474
+        1  systemd                    27866         345
+      588  xfdesktop                  11642         287
+      820  xfce4-terminal              4977         287
+      571  xfce4-panel                 8086         204
+      661  xfce4-power-man             2316         202
+      373  NetworkManager              2258         168
+      580  Thunar                      2348         146
+      646  wrapper-2.0                 2434         140
+
+-- stress-ng --
+stress-ng: info:  [1657] setting to a 1 min run per stressor
+stress-ng: info:  [1657] dispatching hogs: 4 vm
+stress-ng: info:  [1658] vm: using 1.75GB per stressor instance (total 7GB of 3.23GB available memory)
+stress-ng: warn:  [1657] metrics-check: all bogo-op counters are zero, data may be incorrect
+stress-ng: metrc: [1657] stressor       bogo ops real time  usr time  sys time   bogo ops/s     bogo ops/s CPU used per       RSS Max
+stress-ng: metrc: [1657]                           (secs)    (secs)    (secs)   (real time) (usr+sys time) instance (%)          (KB)
+stress-ng: metrc: [1657] vm                    0     66.94      0.27     61.84         0.00           0.00        23.19       1280788
+stress-ng: metrc: [1657] miscellaneous metrics:
+stress-ng: metrc: [1657] vm                     1.00 mmaps total (geometric mean of 4 instances)
+stress-ng: metrc: [1657] vm                     0.01 ms mmap min. duration (geometric mean of 4 instances)
+stress-ng: metrc: [1657] vm                     0.01 ms mmap max. duration (geometric mean of 4 instances)
+stress-ng: metrc: [1657] vm                     0.01 ms mmap avg. duration (geometric mean of 4 instances)
+stress-ng: info:  [1657] skipped: 0
+stress-ng: info:  [1657] passed: 4: vm (4)
+stress-ng: info:  [1657] failed: 0
+stress-ng: info:  [1657] metrics untrustworthy: 0
+stress-ng: info:  [1657] successful run completed in 1 min 6.99 secs
+
+-- vmstat (1 muestra/seg, columnas si/so = swap-in/swap-out) --
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 3  1  19112 3391824  4144 190400    0    0   394    41  910    2  1  7 92  0  0  0
+ 5  0  32380 100452   3220 108352    0    0  5612     0 1455  537  3 89  4  4  0  0
+ 6  0 139316  99768   3220  95428    0   56  2108    56 2396  502  0 100 0  0  0  0
+ 6  0 210112 101784   3220  96292    0    0   780     0 8169  558  0 100 0  0  0  0
+ 5  0 282972 106016   3220  96668    0    0   264     0 8156  556  0 100 0  0  0  0
+ 6  0 353956 100020   3220  96292    0    0    64     0 7950  566  0 100 0  0  0  0
+ 5  0 428916  96368   3236  96364    0    0     0    44 7433  566  0 100 0  0  0  0
+ 5  0 505956  97296   3236  91928    0    0     0     0 7042  547  0 100 0  0  0  0
+ 5  0 575908  91044   3244  91840    0    0     0   508 8304  632  1 100 0  0  0  0
+ 6  0 639044  87292   3244  93616    0    0  1628     0 9418  587  0 100 0  0  0  0
+ 7  0 694828  95284   3244 102696    0    0  8976     0 9364 1536  2 99  0  0  0  0
+ 7  0 743888  82744   3244 103992    0    0  1204     0 9866 1453  2 99  0  0  0  0
+ 7  0 798736  87328   3244 103424    0    0     0     0 9339 1210  1 99  0  0  0  0
+ 6  0 858000  78880   3244 103496    0    0     0     0 9436 1071  1 99  0  0  0  0
+ 6  0 911396  81896   3252 103632    0    0     0    48 9330 1833  3 97  0  0  0  0
+ 6  0 964392  85092   3252 103760    0    0     0     0 9267 1435  2 99  0  0  0  0
+ 5  0 1026308 78640   3252 103872    0    0     0     0 9595  614  0 100 0  0  0  0
+ 5  0 1085176 77336   3252 104024    0    0     0     0 9955  488  0 100 0  0  0  0
+ 5  0 1146196 77972   3252 104160    0    0     0     0 9819  505  0 100 0  0  0  0
+ 5  0 1208872 78696   3252 104296    0    0     0     0 9679  563  1 99  0  0  0  0
+ 5  0 1271996 78116   3252 104440    0    0     0     0 9504  505  0 100 0  0  0  0
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 5  0 1341116 77772   3252 104576    0    0     0     0 8477  514  0 100 0  0  0  0
+ 5  0 1404516 90664   3252 104736    0    0     0     0 9444  520  0 100 0  0  0  0
+ 5  0 1469588 103024  3028 103308    0    0     0     0 8567  495  1 99  0  0  0  0
+ 5  0 1536880 92488   3028 103420    0    0     0     0 8570  520  1 99  0  0  0  0
+ 5  0 1600944 99160   3028 103644    0    0     0     0 9037  500  0 100 0  0  0  0
+ 5  0 1670252 87344   3032 103824    0    0     4     0 8310  539  1 99  0  0  0  0
+ 5  0 1738856 90972   3032 103948    0    0     0     0 8474  525  0 100 0  0  0  0
+ 5  0 1809260 87356   3032 104044    0    0     0     0 8111  545  1 100 0  0  0  0
+ 7  0 1878596 91656   3032 104252    0    0     0     0 8352  586  0 100 0  0  0  0
+ 5  0 1951868 95744   3032 104308    0    0     0     0 7819  541  0 100 0  0  0  0
+ 5  0 2018564 95184   3032 103604    0    0     0     0 8431  565  0 100 0  0  0  0
+ 5  0 2093572 86236   3032 103680    0    0     0     0 7205  537  0 100 0  0  0  0
+ 5  0 2161772 82324   3032 103832    0    0     0     0 8297  547  1 100 0  0  0  0
+ 5  0 2232640 82760   3032 104056    0    0     0     4 7899  561  0 100 0  0  0  0
+ 5  0 2300220 80596   3032 104112    0    0     0     0 8552  504  1 100 0  0  0  0
+ 5  0 2364228 85060   3032 104360    0    0     0     0 8247  497  0 100 0  0  0  0
+ 5  0 2426224 82988   3032 104504    0    0     0     0 8771  494  0 100 0  0  0  0
+ 5  0 2487004 77948   3032 104632    0    0     0     0 8891  590  1 100 0  0  0  0
+ 5  0 2545044 80732   3032 104768    0    0     0    12 9985  557  0 100 0  0  0  0
+ 5  0 2613032 104108  3040 104920    0    0     0    24 8494  517  0 100 0  0  0  0
+ 5  0 2673328 104684  2956  95172    0    0     0     0 9681  506  0 100 0  0  0  0
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 5  0 2738640 105836  2956  95316    0    0     0     0 9117  527  0 100 0  0  0  0
+ 5  0 2802872 94624   2956  96896    0    0  1596     0 8886  523  0 100 0  0  0  0
+ 5  0 2863932 91884   2956  96604    0    0     0    40 9259  513  0 100 0  0  0  0
+ 5  0 2926912 88168   2948  95352    0    0     0     0 9120  485  0 100 0  0  0  0
+ 5  0 2990608 90124   2948  95488    0    0     0     0 9070  490  1 100 0  0  0  0
+ 9  0 3049688 92952   2948 100336    0    0  2568     0 8852  586  0 100 0  0  0  0
+ 7  0 3092940 82620   2948 105372    0    0  7064     0 7629  589  0 100 0  0  0  0
+ 5  0 3125196 81876   2948 105444    0    0     0     0 6255  525  0 100 0  0  0  0
+ 5  0 3162100 91032   2948 105524    0    0     0     0 6563  510  0 100 0  0  0  0
+ 5  0 3200472 80996   2948 105620    0    0     0     0 7029  520  0 100 0  0  0  0
+ 5  0 3235404 80208   2956 105684    0    0     0    12 6665  523  0 100 0  0  0  0
+ 7  0 3269640 80344   2956 110020    0    0  4232     0 6600  547  1 99  0  0  0  0
+ 5  0 3300472 80892   2956 110864    0    0   788     0 6886  554  1 100 0  0  0  0
+ 5  0 3338196 80776   2956 110944    0    0     0     0 6504  513  0 100 0  0  0  0
+ 5  0 3378928 80632   2956 111040    0    0     0     0 6462  512  1 100 0  0  0  0
+ 5  0 3418068 80624   2956 111128    0    0     0     0 6467  529  0 100 0  0  0  0
+ 5  0 3461620 87140   2956 111224    0    0     0     0 6322  587  0 100 0  0  0  0
+ 6  0 3501284 88300   2956 111320    0    0     0     0 5851  542  1 100 0  0  0  0
+ 7  2 3542616 84060   2956 113576    0    0     0     0 6305  540  0 100 0  0  0  0
+ 9  0 3587036 88920   2956 124384    0    0 11184     0 6005  538  0 100 0  0  0  0
+
+-- Después --
+               total        used        free      shared  buff/cache   available
+Mem:            3889         464        3476           0         129        3425
+Swap:           4095         129        3966
+NAME      TYPE SIZE   USED PRIO
+/swapfile file   4G 129.6M   10
+== ArenalOS · Tema 2 Memoria == 14:01:16
+
+-- Memoria física (MB) --
+  Total:   3889.9  Libre:   3459.3  Disponible:   3413.3  Cache:    118.4
+-- Swap (MB) --
+  Total:   4096.0  Usado:    129.6
+    /swapfile            file       usado=  129.6 MB  prioridad=10
+-- zram --
+  original=    0.0 MB  comprimido=    0.0 MB  ratio=0.00x
+-- Top 10 procesos por fallos de página mayores (majflt) --
+      PID  COMM                      minflt      majflt
+      425  Xorg                       19618        2643
+      539  xfwm4                       9730         576
+      820  xfce4-terminal              5057         498
+      588  xfdesktop                  11695         477
+        1  systemd                    27870         345
+      571  xfce4-panel                 8147         325
+      373  NetworkManager              2258         261
+      661  xfce4-power-man             2320         252
+      646  wrapper-2.0                 2434         199
+      580  Thunar                      2369         180
+
+-- zram mm_stat (orig_size compr_size mem_used_total mem_limit mem_used_max same_pages ...) --
+       0        0        0        0        0        0        0        0        0
+
+-- dmesg: eventos de OOM killer --
+sin eventos OOM
+
+== Fin (sin-zram) ==
