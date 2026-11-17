@@ -59,4 +59,7 @@ chown -R sddm:sddm /var/lib/sddm
 # Tema 2: swapfile + zram-generator (memoria)
 bash "$REPO_DIR/src/memoria/install.sh"
 
+# Tema 4: servicio arenalos-memlog (gestion de servicios)
+bash "$REPO_DIR/systemd/install.sh"
+
 echo "== Listo =="
