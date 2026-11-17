@@ -1,0 +1,3 @@
+<property name="&lt;Super&gt;y" type="string" value="xfce4-terminal --title=memoria -e &quot;memoria --top 15&quot;"/>
+<property name="&lt;Super&gt;s" type="string" value="xfce4-terminal --hold --title=servicios-limites -e &quot;servicios-limites -a&quot;"/>
+<property name="&lt;Super&gt;k" type="string" value="xfce4-terminal --hold --title=riesgo-oom -e &quot;riesgo-oom -n 15&quot;"/>
