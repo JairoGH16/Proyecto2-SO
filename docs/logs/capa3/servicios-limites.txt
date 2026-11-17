@@ -1,0 +1,17 @@
+$ servicios-limites
+SERVICIO                              CPU  MEM USADA   MEM MAX  FRENADO
+prueba-limites.service               20 %    0.4 MiB   128 MiB       83
+
+$ servicios-limites -a
+SERVICIO                              CPU  MEM USADA   MEM MAX  FRENADO
+NetworkManager.service             sin límite   16.6 MiB sin límite        0
+dbus-broker.service                sin límite    3.0 MiB sin límite        0
+polkit.service                     sin límite    2.6 MiB sin límite        0
+prueba-limites.service               20 %    0.4 MiB   128 MiB       84
+sddm.service                       sin límite   53.1 MiB sin límite        0
+systemd-journald.service           sin límite   17.7 MiB sin límite        0
+systemd-logind.service             sin límite    2.3 MiB sin límite        0
+systemd-udevd.service              sin límite   26.5 MiB sin límite        0
+systemd-userdbd.service            sin límite    7.2 MiB sin límite        0
+upower.service                     sin límite    2.4 MiB sin límite        0
+vboxservice.service                sin límite    3.1 MiB sin límite        0
