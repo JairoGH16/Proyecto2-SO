@@ -14,7 +14,8 @@ ETIQUETA="${1:?Uso: $0 <etiqueta>  (p.ej. con-zram, sin-zram)}"
 
 DURACION=60
 WORKERS=4
-BYTES_POR_WORKER=1536M   # 4 x 1.5G = 6G, por encima de los ~3.9G de RAM de la VM
+BYTES_TOTAL=7G   # --vm-bytes es el TOTAL repartido entre workers, no por worker;
+                 # 7G entre 4 workers queda por encima de los ~3.9G de RAM de la VM
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG="$REPO_DIR/docs/logs/mediciones/experimento-memoria-$ETIQUETA.log"
@@ -23,7 +24,7 @@ VMSTAT_TMP="$(mktemp)"
 
 {
 echo "== Experimento de memoria ($ETIQUETA) == $(date)"
-echo "Carga: $WORKERS workers x $BYTES_POR_WORKER durante ${DURACION}s"
+echo "Carga: $WORKERS workers, $BYTES_TOTAL en total, durante ${DURACION}s"
 echo
 echo "-- Antes --"
 free -m
@@ -37,7 +38,7 @@ VMSTAT_PID=$!
 {
 echo
 echo "-- stress-ng --"
-stress-ng --vm "$WORKERS" --vm-bytes "$BYTES_POR_WORKER" --vm-method all \
+stress-ng --vm "$WORKERS" --vm-bytes "$BYTES_TOTAL" --vm-method all \
     --timeout "${DURACION}s" --metrics
 } | tee -a "$LOG"
 
