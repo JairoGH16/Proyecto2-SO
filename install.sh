@@ -56,4 +56,7 @@ User=$TARGET_USER
 EOF
 chown -R sddm:sddm /var/lib/sddm
 
+# Tema 2: swapfile + zram-generator (memoria)
+bash "$REPO_DIR/src/memoria/install.sh"
+
 echo "== Listo =="
