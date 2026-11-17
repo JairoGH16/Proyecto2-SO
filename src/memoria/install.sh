@@ -31,7 +31,7 @@ if ! grep -q "^$SWAPFILE " /etc/fstab; then
 else
     echo "  ya está en fstab"
 fi
-swapon "$SWAPFILE" 2>/dev/null || echo "  ya estaba activo"
+swapon -p 10 "$SWAPFILE" 2>/dev/null || echo "  ya estaba activo (prioridad se fija al reiniciar, vía fstab)"
 
 echo "[T2] 2/3 zram-generator"
 pacman -S --needed --noconfirm zram-generator >/dev/null
@@ -42,7 +42,9 @@ else
     echo "  sin cambios"
 fi
 systemctl daemon-reload
-systemctl start /dev/zram0 2>/dev/null || systemctl restart systemd-zram-setup@zram0.service
+# systemctl acepta "/dev/zram0" como alias del .device y lo da por éxito
+# sin tocar el swap; hay que reiniciar el servicio de zram-generator por nombre.
+systemctl restart systemd-zram-setup@zram0.service
 
 echo "[T2] 3/3 Verificación"
 swapon --show
