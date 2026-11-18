@@ -44,6 +44,10 @@ install -d -o "$TARGET_USER" -g "$TARGET_USER" "$DESTINO"
 cp -f "$ORIGEN"/*.xml "$DESTINO"/
 chown -R "$TARGET_USER:$TARGET_USER" "$TARGET_HOME/.config"
 
+# Carpeta compartida de VirtualBox: /media debe poder atravesarse para que el usuario normal
+# entre a /media/sf_arenalos (el grupo vboxsf no basta si /media está en 750)
+chmod 755 /media
+
 # 6. Pantalla de login
 systemctl enable sddm
 
