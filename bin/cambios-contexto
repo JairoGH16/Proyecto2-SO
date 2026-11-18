@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""cambios-contexto: cambios de contexto por segundo de cada proceso.
+
+Interfaz del SO: /proc/PID/status, campos voluntary_ctxt_switches (el proceso
+cedió la CPU, por ejemplo al esperar E/S) y nonvoluntary_ctxt_switches (el
+planificador se la quitó porque se agotó su turno o llegó alguien con más
+derecho). Toma dos muestras separadas por un intervalo y muestra la diferencia.
+Uso: cambios-contexto [-n CUANTOS] [-t SEGUNDOS]
+"""
+import argparse
+import os
+import time
+
+
+def muestra():
+    """Devuelve {pid: (nombre, voluntarios, involuntarios)}."""
+    datos = {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            nombre, vol, inv = "?", 0, 0
+            with open(f"/proc/{pid}/status") as f:
+                for linea in f:
+                    if linea.startswith("Name:"):
+                        nombre = linea.split(None, 1)[1].strip()
+                    elif linea.startswith("voluntary_ctxt_switches:"):
+                        vol = int(linea.split()[1])
+                    elif linea.startswith("nonvoluntary_ctxt_switches:"):
+                        inv = int(linea.split()[1])
+            datos[int(pid)] = (nombre, vol, inv)
+        except (FileNotFoundError, ProcessLookupError, PermissionError):
+            continue  # el proceso terminó entre listar y leer
+    return datos
+
+
+def main():
+    p = argparse.ArgumentParser(description="Cambios de contexto por segundo por proceso")
+    p.add_argument("-n", type=int, default=10, help="cuántos procesos mostrar (10)")
+    p.add_argument("-t", type=float, default=1.0, help="segundos entre muestras (1)")
+    args = p.parse_args()
+    if args.n < 1 or args.t <= 0:
+        p.error("-n debe ser >= 1 y -t > 0")
+
+    antes = muestra()
+    time.sleep(args.t)
+    despues = muestra()
+
+    filas = []
+    for pid, (nombre, vol1, inv1) in despues.items():
+        if pid not in antes:
+            continue  # proceso nuevo: no hay muestra anterior
+        _, vol0, inv0 = antes[pid]
+        filas.append((pid, nombre, (vol1 - vol0) / args.t, (inv1 - inv0) / args.t))
+    filas.sort(key=lambda x: x[2] + x[3], reverse=True)
+
+    print(f"{'PID':>7} {'VOL/s':>9} {'INV/s':>9}  {'%INV':>5}  COMANDO")
+    for pid, nombre, v, i in filas[:args.n]:
+        total = v + i
+        pct = 100 * i / total if total else 0.0
+        print(f"{pid:>7} {v:>9.1f} {i:>9.1f}  {pct:>5.1f}  {nombre}")
+
+
+if __name__ == "__main__":
+    main()
