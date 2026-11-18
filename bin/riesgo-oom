@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""riesgo-oom: qué procesos mataría primero el OOM killer.
+
+Interfaces del SO: /proc/PID/oom_score (puntaje que el kernel calcula; el más
+alto muere primero), /proc/PID/oom_score_adj (ajuste del administrador, de
+-1000 a 1000), /proc/PID/status (VmRSS, memoria residente), /proc/meminfo
+(MemAvailable) y /proc/pressure/memory (PSI de memoria).
+Uso: riesgo-oom [-n CUANTOS]
+"""
+import argparse
+import os
+
+
+def leer(ruta):
+    with open(ruta) as f:
+        return f.read().strip()
+
+
+def main():
+    p = argparse.ArgumentParser(description="Candidatos del OOM killer")
+    p.add_argument("-n", type=int, default=10, help="cuántos procesos mostrar (10)")
+    args = p.parse_args()
+    if args.n < 1:
+        p.error("-n debe ser >= 1")
+
+    disponible = 0
+    for linea in leer("/proc/meminfo").splitlines():
+        if linea.startswith("MemAvailable:"):
+            disponible = int(linea.split()[1])
+    print(f"Memoria disponible: {disponible / 1024:.0f} MiB")
+    try:
+        some = leer("/proc/pressure/memory").splitlines()[0].split()
+        print("PSI memoria 'some':", " ".join(some[1:4]))
+    except FileNotFoundError:
+        print("PSI memoria no disponible en este kernel")
+    print()
+
+    filas = []
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            score = int(leer(f"/proc/{pid}/oom_score"))
+            adj = int(leer(f"/proc/{pid}/oom_score_adj"))
+            nombre, rss = "?", 0
+            for linea in leer(f"/proc/{pid}/status").splitlines():
+                if linea.startswith("Name:"):
+                    nombre = linea.split(None, 1)[1]
+                elif linea.startswith("VmRSS:"):
+                    rss = int(linea.split()[1])
+            filas.append((score, int(pid), adj, rss, nombre))
+        except (FileNotFoundError, ProcessLookupError, PermissionError, ValueError):
+            continue
+
+    filas.sort(reverse=True)
+    print(f"{'PID':>7} {'OOM':>5} {'ADJ':>6} {'RSS MiB':>8}  COMANDO")
+    for score, pid, adj, rss, nombre in filas[:args.n]:
+        print(f"{pid:>7} {score:>5} {adj:>6} {rss / 1024:>8.1f}  {nombre}")
+
+
+if __name__ == "__main__":
+    main()

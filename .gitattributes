@@ -1,0 +1,8 @@
+# Todo el repositorio se aplica en Linux: los archivos de texto se guardan con
+# finales de línea LF aunque se editen desde Windows (un script con CRLF falla
+# en bash con "/bin/bash^M: bad interpreter").
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.pdf binary

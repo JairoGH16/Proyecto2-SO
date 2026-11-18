@@ -1,0 +1,10 @@
+[Unit]
+Description=Ejecuta arenalos-memlog cada 2 minutos
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=2min
+Unit=arenalos-memlog.service
+
+[Install]
+WantedBy=timers.target

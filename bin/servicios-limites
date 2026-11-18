@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""servicios-limites: límites de CPU y memoria que systemd aplica a cada servicio.
+
+Interfaces del SO: cgroups v2 en /sys/fs/cgroup/system.slice/*.service:
+cpu.max (de CPUQuota=), memory.max (de MemoryMax=), memory.current (uso
+actual) y cpu.stat (nr_throttled: veces que el kernel frenó al servicio).
+Uso: servicios-limites [-a]  (-a muestra también los servicios sin límites)
+"""
+import argparse
+import glob
+import os
+
+RAIZ = "/sys/fs/cgroup/system.slice"
+
+
+def leer(ruta):
+    try:
+        with open(ruta) as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+def main():
+    p = argparse.ArgumentParser(description="Límites cgroup de los servicios")
+    p.add_argument("-a", action="store_true", help="incluir servicios sin límites")
+    args = p.parse_args()
+
+    if not os.path.isdir(RAIZ):
+        raise SystemExit("No hay cgroups v2 de systemd en " + RAIZ)
+
+    print(f"{'SERVICIO':<34} {'CPU':>6} {'MEM USADA':>10} {'MEM MAX':>9} {'FRENADO':>8}")
+    mostrados = 0
+    for d in sorted(glob.glob(RAIZ + "/*.service")):
+        nombre = os.path.basename(d)
+        cpu = leer(d + "/cpu.max")
+        mem_max = leer(d + "/memory.max")
+        actual = leer(d + "/memory.current")
+
+        cuota = "sin límite"
+        if cpu and not cpu.startswith("max"):
+            q, per = cpu.split()
+            cuota = f"{100 * int(q) / int(per):.0f} %"
+
+        tope = "sin límite"
+        if mem_max and mem_max != "max":
+            tope = f"{int(mem_max) / 2**20:.0f} MiB"
+
+        if not args.a and cuota == "sin límite" and tope == "sin límite":
+            continue
+
+        frenado = "-"
+        for linea in (leer(d + "/cpu.stat") or "").splitlines():
+            if linea.startswith("nr_throttled"):
+                frenado = linea.split()[1]
+
+        usada = f"{int(actual) / 2**20:.1f} MiB" if actual else "-"
+        print(f"{nombre:<34} {cuota:>6} {usada:>10} {tope:>9} {frenado:>8}")
+        mostrados += 1
+
+    if mostrados == 0:
+        print("(ningún servicio activo tiene límites; use -a para ver todos)")
+
+
+if __name__ == "__main__":
+    main()

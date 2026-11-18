@@ -1,0 +1,32 @@
+$ riesgo-oom -n 5   (en reposo)
+Memoria disponible: 3332 MiB
+PSI memoria 'some': avg10=0.00 avg60=0.00 avg300=0.00
+
+    PID   OOM    ADJ  RSS MiB  COMANDO
+   2565   800    200      8.4  xfconfd
+    570   800    200      6.0  dconf-service
+    537   800    200      4.7  gpg-agent
+    526   800    200      6.6  at-spi2-registr
+    516   800    200      2.6  dbus-broker
+
+$ riesgo-oom -n 5   (stress-ng usando 512 MiB)
+Memoria disponible: 3033 MiB
+PSI memoria 'some': avg10=0.00 avg60=0.00 avg300=0.00
+
+    PID   OOM    ADJ  RSS MiB  COMANDO
+   2749  1355   1000    337.2  stress-ng-vm
+   2565   800    200      8.4  xfconfd
+    570   800    200      6.0  dconf-service
+    537   800    200      4.7  gpg-agent
+    526   800    200      6.6  at-spi2-registr
+
+$ riesgo-oom -n 5   (un sleep con oom_score_adj = 500)
+Memoria disponible: 2961 MiB
+PSI memoria 'some': avg10=0.00 avg60=0.00 avg300=0.00
+
+    PID   OOM    ADJ  RSS MiB  COMANDO
+   2749  1360   1000    399.2  stress-ng-vm
+   2751  1000    500      4.0  sleep
+   2565   800    200      8.4  xfconfd
+    570   800    200      6.0  dconf-service
+    537   800    200      4.7  gpg-agent

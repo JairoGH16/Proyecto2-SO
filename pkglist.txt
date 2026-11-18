@@ -29,3 +29,7 @@ conky
 gvfs
 mousepad
 libreoffice-fresh
+
+# --- Tema 2 (memoria): zram-generator para swap comprimido, stress-ng para el experimento de presión ---
+zram-generator
+stress-ng
