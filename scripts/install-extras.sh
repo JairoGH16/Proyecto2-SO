@@ -7,11 +7,13 @@ BG=/usr/share/backgrounds/xfce/arenal.jpg
 
 # 1. Aplicaciones por defecto para todos los usuarios
 RIS=$(basename "$(ls /usr/share/applications/*ristretto*.desktop | head -n 1)")
+MP=$(basename "$(ls /usr/share/applications/*mousepad*.desktop | head -n 1)")
 {
   echo '[Default Applications]'
   echo 'inode/directory=thunar.desktop'
   for t in $(grep -E '^(video|audio)/' /usr/share/mime/types); do echo "$t=vlc.desktop"; done
   for t in $(grep -E '^image/' /usr/share/mime/types); do echo "$t=$RIS"; done
+  echo "text/plain=$MP"
   for t in text/html x-scheme-handler/http x-scheme-handler/https; do echo "$t=firefox.desktop"; done
 } > /etc/xdg/mimeapps.list
 install -d /etc/xdg/xfce4

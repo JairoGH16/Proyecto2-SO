@@ -26,3 +26,6 @@ ristretto
 xfce4-docklike-plugin
 xfce4-screensaver
 conky
+gvfs
+mousepad
+libreoffice-fresh
