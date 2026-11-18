@@ -1,0 +1,14 @@
+# Maintainer: equipo ArenalOS
+pkgname=arenalos-cambios-contexto
+pkgver=1.0
+pkgrel=1
+pkgdesc="ArenalOS: cambios de contexto por segundo de cada proceso, leídos de /proc"
+arch=('any')
+license=('custom')
+depends=('python')
+source=('cambios-contexto')
+sha256sums=('SKIP')
+
+package() {
+    install -Dm755 "$srcdir/cambios-contexto" "$pkgdir/usr/bin/cambios-contexto"
+}

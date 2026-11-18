@@ -7,6 +7,8 @@ Responsable: Jairo González Hidalgo
 - `pacman/arenalos-explicitos.hook`: hook de pacman (ALPM) que, después de cualquier transacción que instale o elimine paquetes, escribe en `/var/lib/arenalos/explicitos.txt` la lista de paquetes instalados explícitamente (`pacman -Qqe`). Se instala en `/etc/pacman.d/hooks/`. La idea parte del ejemplo de la sección *Pacman/Tips and tricks* de la ArchWiki.
 - `pacman/PKGBUILD`: receta del paquete propio `arenalos-procesos` (versión 1.0-1, arquitectura `any`, depende de `python`), que empaqueta la herramienta del Tema 1 (`src/procesos/procesos.py`) como el comando `/usr/bin/arenalos-procesos`.
 - `scripts/install-procesos-paquetes.sh`, llamado desde `install.sh` antes del mensaje final: instala el hook con `install -Dm644` en `/etc/pacman.d/hooks/`, construye `arenalos-procesos` con `makepkg` en una carpeta temporal como el usuario normal y lo instala con `pacman -U`. Así el hook y el paquete propio quedan instalados al ejecutar `install.sh`, sin pasos manuales.
+- `pacman/cambios-contexto/PKGBUILD`: receta del segundo paquete propio, `arenalos-cambios-contexto` (versión 1.0-1, arquitectura `any`, depende de `python`), que empaqueta el comando libre `bin/cambios-contexto` de la Capa 3 como `/usr/bin/cambios-contexto`.
+- `scripts/install-comandos-capa3.sh`, llamado desde `install.sh` después de `install-procesos-paquetes.sh`: construye `arenalos-cambios-contexto` con `makepkg` en una carpeta temporal, lo instala con `pacman -U` y copia `presion-cpu` a `/usr/local/bin`.
 - Documentación del funcionamiento interno de pacman, con evidencia medida: base de datos local y de sincronización, resolución de dependencias, verificación de firmas, hooks y transacciones (secciones 3 a 5).
 
 ## 2. Concepto de Sistemas Operativos
@@ -60,6 +62,8 @@ for i in 1 2 3 4 5; do time pacman -Qqe > /dev/null; done
 ```
 
 **Paquete propio** (pasos 20 y 21), guardado en `docs/logs/tema-06/paquete-propio.txt`: como `makepkg` no corre como root ni lee la carpeta compartida (de `root:vboxsf`), se copian `PKGBUILD` y `procesos.py` a `~/build-arenalos`, se construye con `makepkg -f`, se instala con `sudo pacman -U --noconfirm arenalos-procesos-1.0-1-any.pkg.tar.zst`, se verifica con `pacman -Qi`, `pacman -Ql` y `pacman -Qo`, y se desinstala con `sudo pacman -R --noconfirm arenalos-procesos`.
+
+**Paquete de la Capa 3** (Fase 5), guardado en `docs/logs/tema-06/paquete-capa3.txt`: mismo procedimiento que el paquete propio anterior, con la receta de `pacman/cambios-contexto/PKGBUILD`. Se copian `PKGBUILD` y `bin/cambios-contexto` a `~/pruebas/pkg`, se construye con `makepkg -f --noconfirm`, se instala con `sudo pacman -U --noconfirm arenalos-cambios-contexto-1.0-1-any.pkg.tar.zst` y se verifica con `pacman -Qi`, `pacman -Ql`, `pacman -Qo /usr/bin/cambios-contexto` y `cambios-contexto -n 3`. Fue una sola ejecución (un `makepkg` y un `pacman -U`).
 
 **Lista declarada frente a instalada** (paso 22): comparación con `comm` entre `pkglist.txt` (sin comentarios) y `explicitos.txt`.
 
@@ -123,7 +127,21 @@ En `pacman.log` las transacciones de reinstalación y de desinstalación de `tre
 ### 4.6 Lista declarada frente a instalada
 
 - **Explícitos que no están en `pkglist.txt` (22):** los del `pacstrap` de la Fase 1 (`base`, `linux-lts`, `linux-firmware`, `mkinitcpio`, `nano`, `networkmanager`, `sudo`), las Guest Additions (`virtualbox-guest-utils`) y los 14 miembros del grupo `xfce4` (`exo`, `garcon`, `thunar`, `thunar-volman`, `tumbler`, `xfce4-appfinder`, `xfce4-panel`, `xfce4-power-manager`, `xfce4-session`, `xfce4-settings`, `xfce4-terminal`, `xfconf`, `xfdesktop` y `xfwm4`).
-- **En `pkglist.txt` pero no instalados explícitamente (3):** `xfce4`, `python` y `xorg-xrandr`. Con `pacman -Qi` se comprobó que `python` está instalado como dependencia de `gdb` y `gdb-common`, y `xorg-xrandr` como dependencia de `virtualbox-guest-utils`.
+- **En `pkglist.txt` pero no instalados explícitamente (3):** `xfce4`, `python` y `xorg-xrandr`. Con `pacman -Qi` se comprobó, en la VM de la Fase 4, que `python` estaba instalado como dependencia de `gdb` y `gdb-common`, y `xorg-xrandr` como dependencia de `virtualbox-guest-utils`. Desde la base limpia con `install.sh`, `python` queda como paquete explícito (ver el log de verificación de la Fase 4).
+
+### 4.7 Paquete de la Capa 3: `arenalos-cambios-contexto`
+
+| Dato (`pacman -Qi`)     | Valor                                              |
+|-------------------------|----------------------------------------------------|
+| Versión / arquitectura  | 1.0-1 / `any`                                      |
+| `Depends On`            | `python`                                           |
+| Tamaño instalado        | 2,41 KiB                                           |
+| Motivo de instalación   | explícito                                          |
+| `Validated By`          | `None` (paquete local sin firma)                   |
+| `Packager`              | `Unknown Packager`                                 |
+| Archivos (`pacman -Ql`) | `/usr/`, `/usr/bin/`, `/usr/bin/cambios-contexto`  |
+
+`cambios-contexto -n 3` funciona como comando desde `/usr/bin` y `pacman -Qo /usr/bin/cambios-contexto` confirma que el archivo pertenece al paquete. Al instalarlo con `pacman -U`, el hook propio corrió (`ArenalOS: actualizando la lista de paquetes explicitos`). Evidencia: `docs/logs/tema-06/paquete-capa3.txt`.
 
 ## 5. Interpretación
 
@@ -134,6 +152,8 @@ En `pacman.log` las transacciones de reinstalación y de desinstalación de `tre
 **El hook.** El hook propio se ejecuta cuando cambia el conjunto de paquetes instalados y no cuando se reinstala uno: en la reinstalación de `tree` solo corrió `35-systemd-update.hook`, y el nuestro no, lo que es coherente con que `libalpm` trate la reinstalación como una operación de actualización (`Upgrade`) y no de instalación; como una reinstalación no cambia qué paquetes están instalados, la lista queda igual (31) y no hace falta que el hook corra. Los hooks de una misma fase se ejecutan en orden alfabético por nombre de archivo, de ahí que `35-systemd-update.hook` corra antes que `arenalos-explicitos.hook`. En cuanto al costo, el comando que agrega el hook tarda unos 0,05 s (entre 0,032 y 0,071 s; la primera lectura fue la más lenta por la caché del disco), frente a transacciones que duran del orden de 1 s o más, por lo que el costo es despreciable y casi constante, ya que depende de cuántos paquetes hay instalados (409) y no de cuántos se instalan.
 
 **El paquete propio.** `makepkg` construyó un paquete `any`, porque el contenido es un script sin código compilado. El paquete instala un único archivo y declara `python` como dependencia, que es lo que `pacman` usa para resolverla. Las dos diferencias con `sudo` son esperables: no está firmado y no define empaquetador (`Unknown Packager`), porque ni el `PKGBUILD` ni `/etc/makepkg.conf` lo establecen.
+
+**El segundo paquete propio.** El procedimiento se repitió con un comando de la Capa 3, `cambios-contexto`, y el resultado fue el mismo: un paquete `any` de un solo archivo (`/usr/bin/cambios-contexto`, 2,41 KiB) que depende de `python`. Comparte con `arenalos-procesos` las mismas diferencias con `sudo`: no está firmado (`Validated By : None`) y no define empaquetador (`Packager : Unknown Packager`). Como se instaló con `pacman -U`, el hook propio también corrió en esta instalación.
 
 **La lista declarada no coincide exactamente con la instalada, y eso es normal.** `xfce4` es un grupo de paquetes y no un paquete: `pacman -Qqe` nunca lo lista, solo a sus miembros (que por eso salen en la primera lista). `python` y `xorg-xrandr` sí están instalados, pero como dependencias de otros paquetes, y `install.sh` usa `pacman -S --needed`, que se salta lo ya instalado y no cambia su motivo de instalación a explícito. La comparación directa por nombres sirve entonces como una verificación aproximada; para una exacta habría que expandir los grupos (`pacman -Sgq xfce4`) y comprobar contra todos los paquetes instalados (`pacman -Qq`).
 

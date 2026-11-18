@@ -176,3 +176,5 @@ La diferencia máxima entre lo medido y lo esperado fue de 0,1 puntos porcentual
 **Comparación entre ambos mecanismos.** Nice ajusta cuánto se lleva cada proceso, pero todos avanzan. La prioridad de tiempo real da prioridad absoluta, con el costo de que un proceso mal escrito puede acaparar la CPU, y por eso el kernel impone el tope. La herramienta `procesos.py` permite observar y cambiar ambos mecanismos, y las pruebas sin privilegios mostraron que el kernel exige permisos para subir la prioridad: `sched_setscheduler` falla con `EPERM` y `setpriority` con `EACCES`.
 
 **Limitaciones.** Todo se midió en una VM con procesos fijados a un solo núcleo; en un sistema real con varios núcleos y procesos que se bloquean por entrada y salida, el reparto sería menos limpio. Los experimentos miden solo el caso de procesos limitados por CPU.
+
+Log del experimento de nice sobre el sistema instalado con `install.sh`: `docs/logs/tema-01/integrado.txt`.

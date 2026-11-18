@@ -1,0 +1,37 @@
+$ pacman -Qi arenalos-cambios-contexto
+Name            : arenalos-cambios-contexto
+Version         : 1.0-1
+Description     : ArenalOS: cambios de contexto por segundo de cada proceso, leídos de /proc
+Architecture    : any
+URL             : None
+Licenses        : custom
+Groups          : None
+Provides        : None
+Depends On      : python
+Optional Deps   : None
+Required By     : None
+Optional For    : None
+Conflicts With  : None
+Replaces        : None
+Installed Size  : 2.41 KiB
+Packager        : Unknown Packager
+Build Date      : Tue 17 Nov 2026 08:51:21 PM CST
+Install Date    : Tue 17 Nov 2026 08:51:22 PM CST
+Install Reason  : Explicitly installed
+Install Script  : No
+Validated By    : None
+
+
+$ pacman -Ql arenalos-cambios-contexto
+arenalos-cambios-contexto /usr/
+arenalos-cambios-contexto /usr/bin/
+arenalos-cambios-contexto /usr/bin/cambios-contexto
+
+$ pacman -Qo /usr/bin/cambios-contexto
+/usr/bin/cambios-contexto is owned by arenalos-cambios-contexto 1.0-1
+
+$ cambios-contexto -n 3
+    PID     VOL/s     INV/s   %INV  COMANDO
+    370       2.0      14.0   87.5  Xorg
+   4447      12.0       0.0    0.0  kworker/u10:0-events_unbound
+    438       5.0       0.0    0.0  psimon

@@ -59,5 +59,6 @@ chown -R sddm:sddm /var/lib/sddm
 # Temas 1 y 6: hook de pacman y paquete arenalos-procesos
 export REPO_DIR TARGET_USER TARGET_HOME
 bash "$REPO_DIR/scripts/install-procesos-paquetes.sh"
+bash "$REPO_DIR/scripts/install-comandos-capa3.sh"
 
 echo "== Listo =="
