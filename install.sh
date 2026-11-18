@@ -73,4 +73,19 @@ bash "$REPO_DIR/src/memoria/install.sh"
 # Tema 4: servicio arenalos-memlog (gestion de servicios)
 bash "$REPO_DIR/systemd/install.sh"
 
+# 8. Tema 5: Compilar herramienta de concurrencia e IPC
+if [ -f "$REPO_DIR/src/ipc/Makefile" ]; then
+  rm -rf /tmp/arenalos-ipc-build
+  cp -r "$REPO_DIR/src/ipc" /tmp/arenalos-ipc-build
+  make -C /tmp/arenalos-ipc-build
+  install -Dm755 /tmp/arenalos-ipc-build/ipc_collector /usr/local/bin/ipc_collector
+  rm -rf /tmp/arenalos-ipc-build
+fi
+
+# 9. Tema 7: Optimizacion del proceso de arranque
+if [ -f /boot/loader/loader.conf ]; then
+  sed -i 's/^timeout 3/timeout 1/' /boot/loader/loader.conf
+fi
+systemctl mask NetworkManager-wait-online.service 2>/dev/null || true
+
 echo "== Listo =="

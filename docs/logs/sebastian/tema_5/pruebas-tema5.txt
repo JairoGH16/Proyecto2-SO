@@ -1,0 +1,65 @@
+=== 1. CON SINCRONIZACION (5 corridas) ===
+[Productor PID=1039] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=2000 | Registrados en SHM=2000 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.02 | Ultima MemAvailable=3360012 kB
+[Productor PID=1044] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=2000 | Registrados en SHM=2000 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.02 | Ultima MemAvailable=3359632 kB
+[Productor PID=1049] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=2000 | Registrados en SHM=2000 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.02 | Ultima MemAvailable=3358748 kB
+[Productor PID=1054] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=2000 | Registrados en SHM=2000 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.02 | Ultima MemAvailable=3354652 kB
+[Productor PID=1060] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=2000 | Registrados en SHM=2000 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.42 | Ultima MemAvailable=3362720 kB
+
+=== 2. SIN SINCRONIZACION (5 corridas) ===
+[Productor PID=1065] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=DESACTIVADA (--no-sync)
+[Resultado] Enviados=2000 | Registrados en SHM=527 | Perdidos=1473 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=1.59 | Ultima MemAvailable=3362720 kB
+[Productor PID=1070] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=DESACTIVADA (--no-sync)
+[Resultado] Enviados=2000 | Registrados en SHM=915 | Perdidos=1085 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.92 | Ultima MemAvailable=3362720 kB
+[Productor PID=1075] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=DESACTIVADA (--no-sync)
+[Resultado] Enviados=2000 | Registrados en SHM=1167 | Perdidos=833 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.72 | Ultima MemAvailable=3362720 kB
+[Productor PID=1080] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=DESACTIVADA (--no-sync)
+[Resultado] Enviados=2000 | Registrados en SHM=387 | Perdidos=1613 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=2.17 | Ultima MemAvailable=3362720 kB
+[Productor PID=1085] Iniciando 4 consumidores | Eventos=2000 | Sincronizacion=DESACTIVADA (--no-sync)
+[Resultado] Enviados=2000 | Registrados en SHM=592 | Perdidos=1408 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=1.41 | Ultima MemAvailable=3362720 kB
+
+=== 3. TRAZA DE LLAMADAS AL SISTEMA (strace -f) ===
+openat(AT_FDCWD, "/dev/shm/arenalos_ipc_telemetry", O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC, 0600) = 3
+mmap(NULL, 432, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0) = 0x7f8bb35e6000
+pipe2([3, 4], 0)                        = 0
+clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLDstrace: Process 1123 attached
+[pid  1122] clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLDstrace: Process 1124 attached
+[pid  1122] wait4(-1 <unfinished ...>
+[pid  1122] <... wait4 resumed>, NULL, 0, NULL) = 1124
+[pid  1122] wait4(-1, NULL, WNOHANG, NULL) = 0
+wait4(-1, NULL, WNOHANG, NULL)          = 1123
+wait4(-1, NULL, WNOHANG, NULL)          = -1 ECHILD (No child processes)
+wait4(-1, NULL, 0, NULL)                = -1 ECHILD (No child processes)
+
+=== 4. PRUEBA DE SEÑALES (SIGCHLD / SIGTERM), PS Y /dev/shm ===
+Terminando trabajador hijo PID=1144 mientras el padre (1142) sigue activo...
+--- ps tras terminar el hijo (sin procesos en estado Z) ---
+    PID    PPID STAT COMMAND
+   1142    1140 S+   ipc_collector
+   1145    1142 S+   ipc_collector
+   1146    1142 S+   ipc_collector
+   1147    1142 S+   ipc_collector
+Enviando SIGTERM al proceso padre PID=1142...
+[Productor PID=1142] Iniciando 4 consumidores | Eventos=5000 | Sincronizacion=ACTIVA (sem_t)
+[Resultado] Enviados=563 | Registrados en SHM=563 | Perdidos=0 | Hijos recolectados=4
+[Telemetria] Carga promedio 1m=0.03 | Ultima MemAvailable=3363768 kB
+--- ps tras SIGTERM al padre ---
+    PID    PPID STAT COMMAND
+--- Verificacion de shm_unlink en /dev/shm ---
+total 0
+drwxrwxrwt  2 root root   40 Nov 17 15:45 .
+drwxr-xr-x 19 root root 3740 Nov 17 15:27 ..

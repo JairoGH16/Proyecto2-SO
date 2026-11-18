@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""ipc-activo: qué canales de comunicación entre procesos hay abiertos.
+
+Interfaces del SO: /proc/net/unix (sockets Unix: inodo, estado y ruta),
+/proc/PID/fd (enlaces socket:[inodo] y pipe:[inodo] para saber qué proceso
+tiene cada canal), /proc/sysvipc/shm (memoria compartida System V) y /dev/shm
+(memoria compartida POSIX). Para ver los procesos de otros usuarios use sudo.
+
+Uso: [sudo] ipc-activo [-n CUANTOS]
+"""
+import argparse
+import os
+
+SO_ACCEPTCON = 0x10000  # bandera de /proc/net/unix: el socket está en listen()
+
+
+def recorrer_fd():
+    """Devuelve ({inodo_socket: 'nombre(pid)'}, {pid_nombre: cuenta_de_pipes})."""
+    duenos, pipes = {}, {}
+    for pid in os.listdir("/proc"):
+        if not pid.isdigit():
+            continue
+        try:
+            with open(f"/proc/{pid}/comm") as f:
+                nombre = f.read().strip()
+            fds = os.listdir(f"/proc/{pid}/fd")
+        except (FileNotFoundError, ProcessLookupError, PermissionError):
+            continue
+        for fd in fds:
+            try:
+                destino = os.readlink(f"/proc/{pid}/fd/{fd}")
+            except OSError:
+                continue
+            if destino.startswith("socket:["):
+                duenos.setdefault(destino[8:-1], f"{nombre}({pid})")
+            elif destino.startswith("pipe:["):
+                clave = f"{nombre}({pid})"
+                pipes[clave] = pipes.get(clave, 0) + 1
+    return duenos, pipes
+
+
+def main():
+    p = argparse.ArgumentParser(description="Canales IPC abiertos")
+    p.add_argument("-n", type=int, default=10, help="filas por sección (10)")
+    args = p.parse_args()
+    if args.n < 1:
+        p.error("-n debe ser >= 1")
+
+    duenos, pipes = recorrer_fd()
+    total = escucha = 0
+    filas = []
+    with open("/proc/net/unix") as f:
+        next(f)  # encabezado
+        for linea in f:
+            c = linea.split()
+            total += 1
+            bandera, inodo = int(c[3], 16), c[6]
+            ruta = c[7] if len(c) > 7 else ""
+            if bandera & SO_ACCEPTCON:
+                escucha += 1
+                filas.append((ruta or "(sin nombre)", duenos.get(inodo, "?")))
+
+    print(f"== Sockets Unix: {total} en total, {escucha} esperando conexiones ==")
+    for ruta, dueno in sorted(filas)[: args.n]:
+        print(f"  {dueno:<28} {ruta}")
+
+    print(f"\n== Procesos con más pipes abiertos (de {len(pipes)} procesos) ==")
+    for dueno, n in sorted(pipes.items(), key=lambda x: -x[1])[: args.n]:
+        print(f"  {dueno:<28} {n} pipes")
+
+    print("\n== Memoria compartida ==")
+    try:
+        with open("/proc/sysvipc/shm") as f:
+            segmentos = len(f.readlines()) - 1
+    except FileNotFoundError:
+        segmentos = 0
+    posix = os.listdir("/dev/shm") if os.path.isdir("/dev/shm") else []
+    print(f"  System V (/proc/sysvipc/shm): {segmentos} segmentos")
+    print(f"  POSIX (/dev/shm): {len(posix)} objetos")
+
+
+if __name__ == "__main__":
+    main()

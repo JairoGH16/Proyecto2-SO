@@ -1,0 +1,31 @@
+$ arranque-info
+Modo de firmware: UEFI
+Gestor de arranque: systemd-boot 262.2-1-arch
+Parámetros del kernel: initrd=\initramfs-linux-lts.img root=UUID=33a26f4a-4658-4c51-882a-e4df7858b8d2
+Encendido hace: 0 h 10 min
+Target por defecto: graphical.target
+Fases del arranque: Startup finished in 1.626s (kernel) + 1.571s (initrd) + 4.684s (userspace) = 7.882s 
+
+$ bootctl status | head -n 12
+System:
+      Firmware: UEFI 2.70 (EDK II 1.00)
+ Firmware Arch: x64
+   Secure Boot: disabled (setup)
+  TPM2 Support: no
+  Measured UKI: no
+   Measured OS: no
+  Boot into FW: supported
+ Platform Lang: n/a
+
+Current Boot Loader:
+        Product: systemd-boot 262.2-1-arch
+
+$ cat /proc/cmdline
+initrd=\initramfs-linux-lts.img root=UUID=33a26f4a-4658-4c51-882a-e4df7858b8d2
+
+$ systemd-analyze time
+Startup finished in 1.626s (kernel) + 1.571s (initrd) + 4.684s (userspace) = 7.882s 
+graphical.target reached after 4.682s in userspace.
+
+$ systemctl get-default
+graphical.target

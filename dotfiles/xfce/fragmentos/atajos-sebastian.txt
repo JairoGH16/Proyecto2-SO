@@ -1,0 +1,3 @@
+<property name="&lt;Super&gt;b" type="string" value="xfce4-terminal --hold --title=arranque-info -e &quot;arranque-info&quot;"/>
+<property name="&lt;Super&gt;i" type="string" value="xfce4-terminal --hold --title=ipc-activo -e &quot;ipc-activo&quot;"/>
+<property name="&lt;Super&gt;a" type="string" value="xfce4-terminal --hold --title=cadena-critica -e &quot;systemd-analyze critical-chain&quot;"/>

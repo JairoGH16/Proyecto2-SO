@@ -33,3 +33,6 @@ libreoffice-fresh
 # --- Tema 2 (memoria): zram-generator para swap comprimido, stress-ng para el experimento de presión ---
 zram-generator
 stress-ng
+
+# --- Tema 5: Concurrencia e IPC ---
+strace
