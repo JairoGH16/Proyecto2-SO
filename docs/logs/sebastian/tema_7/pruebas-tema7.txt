@@ -1,0 +1,374 @@
+=== CONFIGURACION DE ARRANQUE ===
+System:
+      Firmware: UEFI 2.70 (EDK II 1.00)
+ Firmware Arch: x64
+   Secure Boot: disabled (setup)
+  TPM2 Support: no
+  Measured UKI: no
+   Measured OS: no
+  Boot into FW: supported
+ Platform Lang: n/a
+
+Current Boot Loader:
+        Product: systemd-boot 262.2-1-arch
+       Features: ✓ Boot counting
+                 ✓ Menu timeout control
+                 ✓ One-shot menu timeout control
+                 ✓ Default entry control
+                 ✓ One-shot entry control
+                 ✓ Support for XBOOTLDR partition
+                 ✓ Support for passing random seed to OS
+                 ✓ Load drop-in drivers
+                 ✓ Support Type #1 sort-key field
+                 ✓ Support @saved pseudo-entry
+                 ✓ Support Type #1 devicetree field
+                 ✓ Enroll SecureBoot keys
+                 ✓ Retain SHIM protocols
+                 ✓ Menu can be disabled
+                 ✓ Multi-Profile UKIs are supported
+                 ✓ Loader reports network boot URL
+                 ✓ Support Type #1 uki field
+                 ✓ Support Type #1 uki-url field
+                 ✓ Loader reports active TPM2 PCR banks
+                 ✓ Loader reports firmware keyboard layout
+                 ✓ Loader measures SMBIOS information
+      Partition: /dev/disk/by-partuuid/0ba71f77-72c1-4d88-a90e-bebe9fd53984
+         Loader: └─/boot//EFI/BOOT/BOOTX64.EFI
+Keyboard Layout: n/a (not reported by firmware)
+  Current Entry: arenalos-lts.conf
+
+Random Seed:
+ System Token: set
+       Exists: Can't access /boot/loader/random-seed (Permission denied)
+
+Available Boot Loaders on ESP:
+          ESP: /boot (/dev/disk/by-partuuid/0ba71f77-72c1-4d88-a90e-bebe9fd53984)
+         File: (can't access /boot: Permission denied)
+
+No boot loaders listed in EFI Variables.
+
+--- /boot/loader/loader.conf ---
+--- /boot/loader/entries/ ---
+--- /etc/mkinitcpio.conf (HOOKS) ---
+MODULES=()
+BINARIES=()
+FILES=()
+HOOKS=(base systemd autodetect microcode modconf kms keyboard sd-vconsole block filesystems fsck)
+--- Targets activos ---
+  UNIT                  LOAD   ACTIVE SUB    DESCRIPTION
+  basic.target          loaded active active Basic System
+  clonesetup.target     loaded active active Local dm-clone Devices
+  cryptsetup.target     loaded active active Local Encrypted Volumes
+  getty.target          loaded active active Login Prompts
+  graphical.target      loaded active active Graphical Interface
+  imports.target        loaded active active Image Downloads
+  integritysetup.target loaded active active Local Integrity Protected Volumes
+  local-fs-pre.target   loaded active active Preparation for Local File Systems
+  local-fs.target       loaded active active Local File Systems
+  multi-user.target     loaded active active Multi-User System
+  network.target        loaded active active Network
+  paths.target          loaded active active Path Units
+  remote-fs.target      loaded active active Remote File Systems
+  slices.target         loaded active active Slice Units
+  sockets.target        loaded active active Socket Units
+  sound.target          loaded active active Sound Card
+  swap.target           loaded active active Swaps
+  sysinit.target        loaded active active System Initialization
+  timers.target         loaded active active Timer Units
+  veritysetup.target    loaded active active Local Verity Protected Volumes
+
+Legend: LOAD   → Reflects whether the unit definition was properly loaded.
+        ACTIVE → The high-level unit activation state, i.e. generalization of SUB.
+        SUB    → The low-level unit activation state, values depend on unit type.
+
+20 loaded units listed.
+
+=== ANTES DE OPTIMIZAR - CORRIDA 1 ===
+Startup finished in 2.721s (kernel) + 2.001s (initrd) + 5.622s (userspace) = 10.345s 
+graphical.target reached after 5.609s in userspace.
+4.021s sys-devices-pci0000:00-0000:00:01.1-ata2-host1-target1:0:0-1:0:0:0-block-sr0.device
+4.021s dev-disk-by\x2dpath-pci\x2d0000:00:01.1\x2data\x2d1.device
+4.021s dev-disk-by\x2dpath-pci\x2d0000:00:01.1\x2data\x2d1.0.device
+4.021s dev-disk-by\x2did-ata\x2dVBOX_CD\x2dROM_VB0\x2d01f003f6.device
+4.021s dev-sr0.device
+3.617s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-1.device
+3.617s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda1.device
+3.617s dev-sda1.device
+3.617s dev-disk-by\x2ddesignator-esp.device
+3.617s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+3.617s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart1.device
+3.617s dev-disk-by\x2dpartuuid-0ba71f77\x2d72c1\x2d4d88\x2da90e\x2dbebe9fd53984.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @5.609s
+└─sddm.service @5.603s
+  └─systemd-user-sessions.service @5.535s +57ms
+    └─network.target @5.521s
+      └─NetworkManager.service @4.408s +1.110s
+        └─basic.target @4.389s
+          └─dbus-broker.service @4.252s +127ms
+            └─dbus.socket @4.217s +179us
+              └─sysinit.target @4.201s
+                └─systemd-update-utmp.service @4.135s +58ms
+                  └─systemd-tmpfiles-setup.service @3.471s +652ms
+                    └─local-fs.target @3.397s
+                      └─media-sf_arenalos.mount @5.185s
+                        └─local-fs-pre.target @2.034s
+                          └─systemd-tmpfiles-setup-dev.service @1.933s +93ms
+                            └─systemd-tmpfiles-setup-dev-early.service @1.427s +478ms
+                              └─kmod-static-nodes.service @1.078s +275ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice
+
+=== ANTES DE OPTIMIZAR - CORRIDA 2 ===
+Startup finished in 2.863s (kernel) + 1.991s (initrd) + 6.758s (userspace) = 11.614s 
+graphical.target reached after 6.756s in userspace.
+4.647s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+4.647s dev-disk-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+4.647s dev-disk-by\x2ddiskseq-1\x2dpart2.device
+4.647s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+4.647s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda2.device
+4.647s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart2.device
+4.647s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-2.device
+4.647s dev-sda2.device
+4.647s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+4.646s dev-disk-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+
+=== ANTES DE OPTIMIZAR - CORRIDA 3 ===
+Startup finished in 2.358s (kernel) + 2.385s (initrd) + 4.927s (userspace) = 9.671s 
+graphical.target reached after 4.917s in userspace.
+4.707s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart2.device
+4.707s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda2.device
+4.707s dev-disk-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+4.707s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-2.device
+4.707s dev-disk-by\x2ddiskseq-1\x2dpart2.device
+4.707s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+4.705s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+4.705s dev-sda2.device
+4.705s dev-disk-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+4.705s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+
+=== ANTES DE OPTIMIZAR - CORRIDA 4 ===
+Startup finished in 1.263s (kernel) + 2.395s (initrd) + 5.768s (userspace) = 9.428s 
+graphical.target reached after 5.756s in userspace.
+5.033s dev-sda3.device
+5.033s dev-disk-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+5.033s dev-disk-by\x2ddiskseq-1\x2dpart3.device
+5.033s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart3.device
+5.024s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart3.device
+5.024s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+5.024s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+5.024s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda3.device
+5.024s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-3.device
+5.024s dev-disk-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+
+=== ANTES DE OPTIMIZAR - CORRIDA 5 ===
+Startup finished in 1.258s (kernel) + 1.896s (initrd) + 3.095s (userspace) = 6.249s 
+graphical.target reached after 3.091s in userspace.
+3.171s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart3.device
+3.171s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart3.device
+3.171s dev-disk-by\x2ddiskseq-1\x2dpart3.device
+3.171s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+3.171s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-3.device
+3.171s dev-disk-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+3.171s dev-sda3.device
+3.171s dev-disk-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+3.171s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+3.171s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart3.device
+
+=== DESPUES DE OPTIMIZAR - CORRIDA 1 ===
+Startup finished in 1.045s (kernel) + 1.631s (initrd) + 3.997s (userspace) = 6.673s 
+graphical.target reached after 3.995s in userspace.
+3.179s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+3.179s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-08F2\x2dED66.device
+3.179s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart1.device
+3.175s dev-disk-by\x2ddesignator-esp.device
+3.175s dev-disk-by\x2duuid-08F2\x2dED66.device
+3.175s dev-disk-by\x2ddiskseq-1\x2dpart1.device
+3.175s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-0ba71f77\x2d72c1\x2d4d88\x2da90e\x2dbebe9fd53984.device
+3.175s dev-disk-by\x2dpartuuid-0ba71f77\x2d72c1\x2d4d88\x2da90e\x2dbebe9fd53984.device
+3.175s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+3.175s dev-sda1.device
+3.175s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda1.device
+3.175s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-1.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @3.995s
+└─sddm.service @3.994s
+  └─systemd-user-sessions.service @3.949s +26ms
+    └─network.target @3.937s
+      └─NetworkManager.service @3.353s +581ms
+        └─basic.target @3.327s
+          └─dbus-broker.service @3.162s +163ms
+            └─dbus.socket @3.125s +102us
+              └─sysinit.target @3.106s
+                └─systemd-update-utmp.service @3.049s +54ms
+                  └─systemd-tmpfiles-setup.service @2.635s +402ms
+                    └─local-fs.target @2.575s
+                      └─media-sf_arenalos.mount @3.670s
+                        └─local-fs-pre.target @1.365s
+                          └─systemd-tmpfiles-setup-dev.service @1.285s +76ms
+                            └─systemd-tmpfiles-setup-dev-early.service @922ms +342ms
+                              └─kmod-static-nodes.service @757ms +134ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice
+
+=== DESPUES DE OPTIMIZAR - CORRIDA 2 ===
+Startup finished in 1.608s (kernel) + 3.094s (initrd) + 4.815s (userspace) = 9.518s 
+graphical.target reached after 4.813s in userspace.
+4.935s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+4.935s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+4.935s dev-disk-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+4.935s dev-disk-by\x2ddiskseq-1\x2dpart2.device
+4.935s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda2.device
+4.935s dev-sda2.device
+4.935s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+4.935s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart2.device
+4.935s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-2.device
+4.935s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart2.device
+4.935s dev-disk-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+4.927s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @4.813s
+└─sddm.service @4.809s
+  └─systemd-user-sessions.service @4.759s +37ms
+    └─network.target @4.755s
+      └─NetworkManager.service @4.028s +726ms
+        └─basic.target @4.024s
+          └─dbus-broker.service @3.876s +146ms
+            └─dbus.socket @3.838s +1ms
+              └─sysinit.target @3.825s
+                └─systemd-update-utmp.service @3.772s +44ms
+                  └─systemd-tmpfiles-setup.service @3.495s +269ms
+                    └─local-fs.target @3.460s
+                      └─media-sf_arenalos.mount @4.447s
+                        └─local-fs-pre.target @2.042s
+                          └─systemd-tmpfiles-setup-dev.service @1.940s +99ms
+                            └─systemd-tmpfiles-setup-dev-early.service @1.521s +394ms
+                              └─kmod-static-nodes.service @1.172s +210ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice
+
+=== DESPUES DE OPTIMIZAR - CORRIDA 3 ===
+Startup finished in 1.247s (kernel) + 1.698s (initrd) + 4.005s (userspace) = 6.951s 
+graphical.target reached after 3.997s in userspace.
+3.402s dev-sda1.device
+3.402s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-1.device
+3.402s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-08F2\x2dED66.device
+3.402s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-0ba71f77\x2d72c1\x2d4d88\x2da90e\x2dbebe9fd53984.device
+3.402s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart1.device
+3.394s dev-disk-by\x2ddesignator-esp.device
+3.394s dev-disk-by\x2duuid-08F2\x2dED66.device
+3.394s dev-disk-by\x2dpartuuid-0ba71f77\x2d72c1\x2d4d88\x2da90e\x2dbebe9fd53984.device
+3.394s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart1.device
+3.394s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda1.device
+3.394s dev-disk-by\x2ddiskseq-1\x2dpart1.device
+3.394s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart1.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @3.997s
+└─sddm.service @3.995s
+  └─systemd-user-sessions.service @3.965s +19ms
+    └─network.target @3.924s
+      └─NetworkManager.service @3.257s +666ms
+        └─basic.target @3.245s
+          └─dbus-broker.service @3.092s +151ms
+            └─dbus.socket @3.061s +119us
+              └─sysinit.target @3.049s
+                └─systemd-update-utmp.service @2.985s +56ms
+                  └─systemd-tmpfiles-setup.service @2.637s +335ms
+                    └─local-fs.target @2.592s
+                      └─media-sf_arenalos.mount @3.678s
+                        └─local-fs-pre.target @1.439s
+                          └─systemd-tmpfiles-setup-dev.service @1.359s +76ms
+                            └─systemd-tmpfiles-setup-dev-early.service @943ms +395ms
+                              └─kmod-static-nodes.service @829ms +95ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice
+
+=== DESPUES DE OPTIMIZAR - CORRIDA 4 ===
+Startup finished in 1.781s (kernel) + 1.646s (initrd) + 5.078s (userspace) = 8.506s 
+graphical.target reached after 5.073s in userspace.
+4.384s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart3.device
+4.384s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda3.device
+4.384s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-3.device
+4.384s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+4.384s dev-disk-by\x2duuid-33a26f4a\x2d4658\x2d4c51\x2d882a\x2de4df7858b8d2.device
+4.384s dev-sda3.device
+4.384s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+4.384s dev-disk-by\x2ddiskseq-1\x2dpart3.device
+4.384s dev-disk-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+4.384s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart3.device
+4.384s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart3.device
+4.285s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @5.073s
+└─sddm.service @5.071s
+  └─systemd-user-sessions.service @5.015s +45ms
+    └─network.target @5.004s
+      └─NetworkManager.service @4.331s +672ms
+        └─basic.target @4.329s
+          └─dbus-broker.service @4.207s +121ms
+            └─dbus.socket @4.180s +65us
+              └─sysinit.target @4.170s
+                └─systemd-update-utmp.service @4.125s +39ms
+                  └─systemd-tmpfiles-setup.service @3.875s +240ms
+                    └─local-fs.target @3.830s
+                      └─media-sf_arenalos.mount @4.718s
+                        └─local-fs-pre.target @2.308s
+                          └─systemd-tmpfiles-setup-dev.service @2.176s +127ms
+                            └─systemd-tmpfiles-setup-dev-early.service @1.445s +693ms
+                              └─kmod-static-nodes.service @1.232s +144ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice
+
+=== DESPUES DE OPTIMIZAR - CORRIDA 5 ===
+Startup finished in 1.074s (kernel) + 2.160s (initrd) + 3.930s (userspace) = 7.165s 
+graphical.target reached after 3.926s in userspace.
+3.677s sys-devices-pci0000:00-0000:00:0d.0-ata1-host0-target0:0:0-0:0:0:0-block-sda-sda2.device
+3.677s dev-disk-by\x2did-ata\x2dVBOX_HARDDISK_VB3abd4320\x2d5ca052ce\x2dpart2.device
+3.677s dev-disk-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+3.674s dev-sda2.device
+3.674s dev-disk-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+3.674s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-6a2788bf\x2d04aa\x2d425e\x2d85e3\x2d39d79253c95d.device
+3.674s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart2.device
+3.674s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2duuid-05136c04\x2d3f4b\x2d40dd\x2dba89\x2d23d9724b3725.device
+3.674s dev-disk-by\x2ddiskseq-1\x2dpart2.device
+3.674s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartnum-2.device
+3.674s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1\x2dpart2.device
+3.634s dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2data\x2d1.0\x2dpart-by\x2dpartuuid-51613b0e\x2d4cde\x2d4f8b\x2dbaef\x2d60f6f47c4b46.device
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @3.926s
+└─sddm.service @3.923s
+  └─systemd-user-sessions.service @3.878s +36ms
+    └─network.target @3.865s
+      └─NetworkManager.service @3.297s +567ms
+        └─basic.target @3.277s
+          └─dbus-broker.service @3.139s +133ms
+            └─dbus.socket @3.100s +97us
+              └─sysinit.target @3.086s
+                └─systemd-update-utmp.service @3.027s +52ms
+                  └─systemd-tmpfiles-setup.service @2.689s +321ms
+                    └─local-fs.target @2.628s
+                      └─media-sf_arenalos.mount @3.708s
+                        └─local-fs-pre.target @1.390s
+                          └─systemd-tmpfiles-setup-dev.service @1.307s +79ms
+                            └─systemd-tmpfiles-setup-dev-early.service @951ms +323ms
+                              └─kmod-static-nodes.service @828ms +106ms
+                                └─systemd-journald.socket
+                                  └─system.slice
+                                    └─-.slice

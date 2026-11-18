@@ -13,3 +13,6 @@ xorg-setxkbmap
 xfce4
 sddm
 ttf-dejavu
+
+# --- Tema 5: Concurrencia e IPC ---
+strace
