@@ -2,9 +2,11 @@
 # Cada tema agrega los suyos bajo su propio comentario.
 
 # --- Base y herramientas ---
+# sudo: install.sh construye los paquetes propios con sudo -u y el Tema 9 instala sudoers
 git
 base-devel
 man-db
+sudo
 
 # --- Escritorio (Fase 2) ---
 xorg-server
@@ -18,6 +20,20 @@ ttf-dejavu
 python
 pacman-contrib
 
+# --- Tema 2 (memoria): zram-generator para swap comprimido, stress-ng para el experimento de presión ---
+zram-generator
+stress-ng
+
+# --- Tema 5: Concurrencia e IPC ---
+strace
+
+# --- Temas 8 y 9 (E/S y dispositivos, protección y seguridad) ---
+# sshd para el endurecimiento de SSH y nft para el firewall (security/install.sh)
+# acl: setfacl y getfacl para el directorio compartido (security/setup-usuarios-acl.sh)
+openssh
+nftables
+acl
+
 # --- Extras del escritorio ---
 firefox
 vlc
@@ -29,15 +45,3 @@ conky
 gvfs
 mousepad
 libreoffice-fresh
-
-# --- Tema 2 (memoria): zram-generator para swap comprimido, stress-ng para el experimento de presión ---
-zram-generator
-stress-ng
-
-# --- Tema 5: Concurrencia e IPC ---
-strace
-
-# --- Temas 8 y 9 (E/S y dispositivos, protección y seguridad) ---
-# sshd para el endurecimiento de SSH y nft para el firewall (security/install.sh)
-openssh
-nftables

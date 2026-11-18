@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — instala y configura ArenalOS (Fase 2: escritorio XFCE).
+# install.sh — instala y configura ArenalOS: escritorio XFCE, temas de la Capa 2 y comandos de la Capa 3.
 # Uso: sudo bash install.sh
 set -euo pipefail
 
@@ -60,20 +60,19 @@ User=$TARGET_USER
 EOF
 chown -R sddm:sddm /var/lib/sddm
 
-# Temas 1 y 6: hook de pacman y paquete arenalos-procesos
+# --- Temas 1 y 6 (Jairo): hook de pacman y paquete arenalos-procesos ---
 export REPO_DIR TARGET_USER TARGET_HOME
 bash "$REPO_DIR/scripts/install-procesos-paquetes.sh"
-bash "$REPO_DIR/scripts/install-comandos-capa3.sh"
-# --- Extras del escritorio ---
-bash "$REPO_DIR/scripts/install-extras.sh"
 
-# Tema 2: swapfile + zram-generator (memoria)
+# --- Tema 2 (Rafael): swapfile + zram-generator (memoria) ---
 bash "$REPO_DIR/src/memoria/install.sh"
 
-# Tema 4: servicio arenalos-memlog (gestion de servicios)
+# --- Tema 4 (Rafael): servicio arenalos-memlog (gestión de servicios) ---
 bash "$REPO_DIR/systemd/install.sh"
 
-# 8. Tema 5: Compilar herramienta de concurrencia e IPC
+# --- Temas 5 y 7 (Sebastián) ---
+# Tema 5: compilar la herramienta de concurrencia e IPC. Se compila en /tmp porque
+# la carpeta compartida de VirtualBox no deja ejecutar.
 if [ -f "$REPO_DIR/src/ipc/Makefile" ]; then
   rm -rf /tmp/arenalos-ipc-build
   cp -r "$REPO_DIR/src/ipc" /tmp/arenalos-ipc-build
@@ -82,10 +81,27 @@ if [ -f "$REPO_DIR/src/ipc/Makefile" ]; then
   rm -rf /tmp/arenalos-ipc-build
 fi
 
-# 9. Tema 7: Optimizacion del proceso de arranque
+# Tema 7: optimización del proceso de arranque
 if [ -f /boot/loader/loader.conf ]; then
   sed -i 's/^timeout 3/timeout 1/' /boot/loader/loader.conf
 fi
 systemctl mask NetworkManager-wait-online.service 2>/dev/null || true
+
+# --- Tema 8 (Esteban): lista negra de módulos y regla udev de las USB ---
+bash "$REPO_DIR/udev/install.sh"
+
+# --- Tema 9 (Esteban): usuarios, sudoers, SSH endurecido y firewall ---
+# La cuenta administradora es quien corre install.sh (queda en arenalos-ssh).
+ADMIN_USER="$TARGET_USER" bash "$REPO_DIR/security/install.sh"
+
+# --- Capa 3: comandos libres de cada integrante y midistro-info ---
+bash "$REPO_DIR/scripts/install-comandos-capa3.sh"
+bash "$REPO_DIR/scripts/install-comandos-memoria-servicios.sh"
+bash "$REPO_DIR/scripts/install-comandos-ipc-arranque.sh"
+bash "$REPO_DIR/scripts/install-comandos-seguridad-dispositivos.sh"
+bash "$REPO_DIR/scripts/install-midistro-info.sh"
+
+# --- Extras del escritorio (Jairo) ---
+bash "$REPO_DIR/scripts/install-extras.sh"
 
 echo "== Listo =="
