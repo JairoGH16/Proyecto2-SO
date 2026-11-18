@@ -325,25 +325,25 @@ Por qué: el instalador escribe en `/etc`, `/boot` y `/usr`, y habilita servicio
 
 **Qué instala, en orden:**
 
-| Orden | Paso                         | Qué hace                                                                                                                       |
-|-------|------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| 1     | `NoExtract` en `pacman.conf` | Evita que `pacman` vuelva a poner los fondos por defecto de XFCE (va antes de instalar `xfce4`)                                |
-| 2     | Paquetes                     | `pacman -Syu` y luego instala todo `pkglist.txt` con `--needed` (se salta lo ya instalado)                                     |
-| 3     | Fondo                        | Deja solo la foto del volcán Arenal en `/usr/share/backgrounds/xfce/`                                                          |
-| 4     | Teclado                      | `localectl set-x11-keymap latam` para la sesión gráfica                                                                        |
-| 5     | Configuración de XFCE        | Copia los XML de `dotfiles/xfce/xfconf/` (atajos, workspaces, fondo, panel) al home del usuario                                |
-| —     | `chmod 755 /media`           | Deja entrar al usuario normal a `/media/sf_arenalos` (el grupo `vboxsf` no basta si `/media` está en 750)                      |
-| 6     | Pantalla de login            | Habilita SDDM                                                                                                                  |
-| 7     | Sesión por defecto           | XFCE en X11 como sesión de SDDM para el usuario                                                                                |
-| 8     | Temas 1 y 6                  | Hook `arenalos-explicitos.hook` de pacman y paquete propio `arenalos-procesos`, construido con `makepkg`                       |
-| 9     | Tema 2                       | Swapfile de 4 GiB y zram con `zram-generator` (zram con más prioridad que el swapfile)                                         |
-| 10    | Tema 4                       | Servicio y timer `arenalos-memlog`, limitados con `CPUQuota` y `MemoryMax`                                                     |
-| 11    | Tema 5                       | Compila `ipc_collector` en `/tmp/arenalos-ipc-build` (la carpeta compartida no deja ejecutar) y lo instala en `/usr/local/bin` |
-| 12    | Tema 7                       | Baja el `timeout` de systemd-boot de 3 a 1 s y enmascara `NetworkManager-wait-online.service`                                  |
-| 13    | Tema 8                       | Lista negra de módulos (regenera el initramfs si cambia) y regla udev que monta las USB en solo lectura                        |
-| 14    | Tema 9                       | Usuarios y grupos con privilegio mínimo, ACL, sudoers por comando, SSH solo con llave y firewall nftables                      |
-| 15    | Capa 3                       | Comandos libres de los cuatro integrantes (`cambios-contexto` como paquete propio) y `midistro-info` con sus módulos           |
-| 16    | Extras del escritorio        | Aplicaciones por defecto, fondo de SDDM y reloj Conky                                                                          |
+| Orden | Paso                         | Qué hace                                                                                                                          |
+|-------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| 1     | `NoExtract` en `pacman.conf` | Evita que `pacman` vuelva a poner los fondos por defecto de XFCE (va antes de instalar `xfce4`)                                   |
+| 2     | Paquetes                     | `pacman -Syu` y luego instala todo `pkglist.txt` con `--needed` (se salta lo ya instalado)                                        |
+| 3     | Fondo                        | Deja solo la foto del volcán Arenal en `/usr/share/backgrounds/xfce/`                                                             |
+| 4     | Teclado                      | `localectl set-x11-keymap latam` para la sesión gráfica                                                                           |
+| 5     | Configuración de XFCE        | Copia los XML de `dotfiles/xfce/xfconf/` (atajos, workspaces, fondo, panel) al home del usuario y crea los 4 lanzadores del panel |
+| —     | `chmod 755 /media`           | Deja entrar al usuario normal a `/media/sf_arenalos` (el grupo `vboxsf` no basta si `/media` está en 750)                         |
+| 6     | Pantalla de login            | Habilita SDDM                                                                                                                     |
+| 7     | Sesión por defecto           | XFCE en X11 como sesión de SDDM para el usuario                                                                                   |
+| 8     | Temas 1 y 6                  | Hook `arenalos-explicitos.hook` de pacman y paquete propio `arenalos-procesos`, construido con `makepkg`                          |
+| 9     | Tema 2                       | Swapfile de 4 GiB y zram con `zram-generator` (zram con más prioridad que el swapfile)                                            |
+| 10    | Tema 4                       | Servicio y timer `arenalos-memlog`, limitados con `CPUQuota` y `MemoryMax`                                                        |
+| 11    | Tema 5                       | Compila `ipc_collector` en `/tmp/arenalos-ipc-build` (la carpeta compartida no deja ejecutar) y lo instala en `/usr/local/bin`    |
+| 12    | Tema 7                       | Baja el `timeout` de systemd-boot de 3 a 1 s y enmascara `NetworkManager-wait-online.service`                                     |
+| 13    | Tema 8                       | Lista negra de módulos (regenera el initramfs si cambia) y regla udev que monta las USB en solo lectura                           |
+| 14    | Tema 9                       | Usuarios y grupos con privilegio mínimo, ACL, sudoers por comando, SSH solo con llave y firewall nftables                         |
+| 15    | Capa 3                       | Comandos libres de los cuatro integrantes (`cambios-contexto` como paquete propio) y `midistro-info` con sus módulos              |
+| 16    | Extras del escritorio        | Aplicaciones por defecto, fondo de SDDM y reloj Conky                                                                             |
 
 Los paquetes de cada paso están en `pkglist.txt`, con una sección por tema.
 
@@ -362,6 +362,7 @@ midistro-info          # resumen del sistema con las secciones de los cuatro int
 swapon --show          # zram0 y el swapfile (Tema 2)
 systemctl list-timers arenalos-memlog.timer   # timer del Tema 4
 sudo nft list ruleset | head                   # firewall del Tema 9
+ls ~/.config/xfce4/panel/launcher-1{3,4,5,6}/  # los 4 lanzadores del panel (terminal, Firefox, Thunar, Mousepad)
 ```
 
 Los atajos de [`cheatsheet.md`](cheatsheet.md) deben abrir cada comando en una terminal.

@@ -122,12 +122,41 @@ paso_teclado() {
   localectl set-x11-keymap latam
 }
 
+lanzadores_panel() {
+  # Los lanzadores plugin-13 a plugin-16 de xfce4-panel.xml apuntan a .desktop que XFCE
+  # busca en ~/.config/xfce4/panel/launcher-N/. Se copian de /usr/share/applications
+  # (no se versionan, para que sigan la versión instalada de cada paquete).
+  # Formato: <launcher-N> <archivo en el panel> <.desktop de origen> <paquete que lo instala>
+  local lanzadores=(
+    "launcher-13 17949725521.desktop xfce4-terminal.desktop xfce4-terminal (grupo xfce4)"
+    "launcher-14 17949725522.desktop firefox.desktop firefox"
+    "launcher-15 17949725523.desktop thunar.desktop thunar (grupo xfce4)"
+    "launcher-16 17949725524.desktop org.xfce.mousepad.desktop mousepad"
+  )
+  local entrada dir archivo origen paquete destino
+  for entrada in "${lanzadores[@]}"; do
+    read -r dir archivo origen paquete <<< "$entrada"
+    origen="/usr/share/applications/$origen"
+    destino="$TARGET_HOME/.config/xfce4/panel/$dir/$archivo"
+    if [ ! -f "$origen" ]; then
+      echo "ERROR: falta $origen para el lanzador $dir del panel; lo instala el paquete $paquete (ver pkglist.txt)."
+      return 1
+    fi
+    if cmp -s "$origen" "$destino"; then
+      continue
+    fi
+    install -D -m644 -o "$TARGET_USER" -g "$TARGET_USER" "$origen" "$destino"
+    echo "Lanzador $dir del panel: $destino"
+  done
+}
+
 paso_xfce() {
   # Configuración de XFCE (atajos, workspaces, fondo, panel) en el home del usuario
   local ORIGEN="$REPO_DIR/dotfiles/xfce/xfconf/xfce-perchannel-xml"
   local DESTINO="$TARGET_HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
   install -d -o "$TARGET_USER" -g "$TARGET_USER" "$DESTINO"
   cp -f "$ORIGEN"/*.xml "$DESTINO"/
+  lanzadores_panel
   chown -R "$TARGET_USER:$TARGET_USER" "$TARGET_HOME/.config"
   # Carpeta compartida de VirtualBox: /media debe poder atravesarse para que el usuario normal
   # entre a /media/sf_arenalos (el grupo vboxsf no basta si /media está en 750)
