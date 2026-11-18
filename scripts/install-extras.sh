@@ -6,8 +6,16 @@ set -euo pipefail
 BG=/usr/share/backgrounds/xfce/arenal.jpg
 
 # 1. Aplicaciones por defecto para todos los usuarios
-RIS=$(basename "$(ls /usr/share/applications/*ristretto*.desktop | head -n 1)")
-MP=$(basename "$(ls /usr/share/applications/*mousepad*.desktop | head -n 1)")
+# Nombre del .desktop de una aplicación; falla con un mensaje claro si no está instalada
+# (sin esto, un nombre vacío dejaría asociaciones rotas en mimeapps.list sin avisar).
+desktop_de() {
+    local f
+    f="$(find /usr/share/applications -maxdepth 1 -name "*$1*.desktop" -print -quit)"
+    [ -n "$f" ] || { echo "ERROR: no se encontró el .desktop de $1 (¿está en pkglist.txt?)" >&2; exit 1; }
+    basename "$f"
+}
+RIS="$(desktop_de ristretto)"
+MP="$(desktop_de mousepad)"
 {
   echo '[Default Applications]'
   echo 'inode/directory=thunar.desktop'
@@ -62,4 +70,5 @@ ${alignc}${font DejaVu Sans:bold:size=90}${time %H:%M}${font}
 ${alignc}${time %A, %d de %B de %Y}
 ]]
 CONKY
+install -d /etc/xdg/autostart
 printf '[Desktop Entry]\nType=Application\nName=Reloj ArenalOS\nExec=sh -c "sleep 3; exec conky -c /etc/arenalos/reloj.conf"\nX-GNOME-Autostart-enabled=true\n' > /etc/xdg/autostart/arenalos-reloj.desktop
