@@ -351,7 +351,9 @@ Los paquetes de cada paso están en `pkglist.txt`, con una sección por tema.
 
 **35. Segunda ejecución.** Se vuelve a correr el mismo comando.
 
-Por qué: comprueba que el instalador es idempotente. La segunda vez `pacman` no instala nada nuevo (`there is nothing to do`), los paquetes propios solo se reinstalan y los instaladores de los temas informan `sin cambios`.
+Por qué: comprueba que el instalador es idempotente. La segunda vez `pacman` no instala nada nuevo (`there is nothing to do`), los paquetes propios no se vuelven a construir y los instaladores de los temas informan que ya estaba todo hecho.
+
+**Nota.** El instalador se puede ejecutar todas las veces que haga falta. Si en la primera ejecución se actualiza el kernel, el aviso final lo indica: conviene reiniciar y ejecutarlo de nuevo, para completar los pasos que necesitan cargar módulos del kernel (zram y el firewall). Si un paso falla, el mensaje dice cuál fue, y basta con corregir la causa y volver a ejecutarlo.
 
 **36. Reiniciar y comprobar.** Después de `sudo reboot`, se entra por SDDM a XFCE y se comprueba:
 
