@@ -64,7 +64,7 @@ systemctl enable nftables >/dev/null   # oculta "Created symlink"; los errores v
 if ! modulos_disponibles; then
     put 644 "$DIR/nftables.conf" /etc/nftables.conf || true   # put devuelve 1 si no hubo cambios
     echo "  AVISO: el kernel en ejecución ($(uname -r)) se actualizó y sus módulos ya no están;"
-    echo "         el firewall queda configurado y habilitado, y se carga al reiniciar"
+    echo "         el firewall queda configurado y habilitado (sin validar nft en vivo) y se carga al reiniciar"
 else
     nft -c -f "$DIR/nftables.conf"
     nft_cambio=0

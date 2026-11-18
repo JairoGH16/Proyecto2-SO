@@ -99,11 +99,12 @@ paso_paquetes() {
   esperar_pacman
   pacman -Syu --noconfirm
   # Si pacman -Syu actualizó el kernel, el que está en ejecución ya no tiene sus
-  # módulos en /usr/lib/modules: lo que necesite modprobe se completa tras reiniciar.
+  # módulos en /usr/lib/modules. Los pasos que los necesitan (zram y el firewall)
+  # dejan todo configurado y habilitado, y se activan solos en el siguiente arranque.
   if [ ! -d "/usr/lib/modules/$(uname -r)" ]; then
     KERNEL_ACTUALIZADO=1
     echo "AVISO: se actualizó el kernel (en ejecución: $(uname -r)). Los pasos que cargan"
-    echo "       módulos quedan configurados y se completan al reiniciar y volver a ejecutar."
+    echo "       módulos quedan configurados y se activan al reiniciar."
   fi
   esperar_pacman
   grep -vE '^\s*(#|$)' "$REPO_DIR/pkglist.txt" | pacman -S --needed --noconfirm -
@@ -265,7 +266,10 @@ echo "== Listo =="
 if [ "$KERNEL_ACTUALIZADO" = 1 ]; then
   echo
   echo "############################################################################"
-  echo "AVISO: se actualizó el kernel. Reinicie y vuelva a ejecutar"
-  echo "       sudo bash install.sh para completar zram y lo demás."
+  echo "La instalación terminó. Se actualizó el kernel, así que falta reiniciar"
+  echo "(sudo reboot) para activar zram, el firewall y el resto. No hace falta volver"
+  echo "a ejecutar install.sh. Después de reiniciar, compruebe:"
+  echo "  swapon --show                 # /dev/zram0 con prioridad 100 y /swapfile con 10"
+  echo "  systemctl is-active nftables  # active"
   echo "############################################################################"
 fi

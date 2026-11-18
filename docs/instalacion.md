@@ -321,7 +321,7 @@ Por qué: permite volver a un sistema sin ArenalOS y probar que `install.sh` fun
 sudo bash /media/sf_arenalos/install.sh
 ```
 
-Por qué: el instalador escribe en `/etc`, `/boot` y `/usr`, y habilita servicios, así que necesita root. Se corre con `sudo` desde la cuenta normal (no como root directo) porque usa `SUDO_USER` para saber a qué usuario configurarle el escritorio, a quién dejar como administrador en el Tema 9 y con qué cuenta construir los paquetes propios (`makepkg` no corre como root). Toda la salida se guarda también en `docs/logs/install-<hostname>.log` y termina con `== Listo ==`.
+Por qué: el instalador escribe en `/etc`, `/boot` y `/usr`, y habilita servicios, así que necesita root. Se corre con `sudo` desde la cuenta normal (no como root directo) porque usa `SUDO_USER` para saber a qué usuario configurarle el escritorio, a quién dejar como administrador en el Tema 9 y con qué cuenta construir los paquetes propios (`makepkg` no corre como root). Toda la salida se guarda también en `docs/logs/install-<hostname>.log` y termina con `== Listo ==`. Si durante la ejecución se actualizó el kernel, después de `== Listo ==` aparece un aviso de que la instalación terminó y solo falta reiniciar.
 
 **Qué instala, en orden:**
 
@@ -349,19 +349,16 @@ Los paquetes de cada paso están en `pkglist.txt`, con una sección por tema.
 
 **Antes de correrlo:** el Tema 9 deja SSH solo con llave. La consola de VirtualBox no se ve afectada, pero si se va a entrar por SSH, primero hay que copiar la llave pública a `~/.ssh/authorized_keys`.
 
-**35. Segunda ejecución.** Se vuelve a correr el mismo comando.
+**Nota.** El instalador se ejecuta una vez y luego se reinicia la VM; también se puede repetir sin problema. Si en la ejecución se actualiza el kernel, lo que necesita cargar módulos (zram y el firewall) queda configurado y se activa solo al reiniciar. Si un paso falla, el mensaje dice cuál fue, y basta con corregir la causa y volver a ejecutarlo.
 
-Por qué: comprueba que el instalador es idempotente. La segunda vez `pacman` no instala nada nuevo (`there is nothing to do`), los paquetes propios no se vuelven a construir y los instaladores de los temas informan que ya estaba todo hecho.
-
-**Nota.** El instalador se puede ejecutar todas las veces que haga falta. Si en la primera ejecución se actualiza el kernel, el aviso final lo indica: conviene reiniciar y ejecutarlo de nuevo, para completar los pasos que necesitan cargar módulos del kernel (zram y el firewall). Si un paso falla, el mensaje dice cuál fue, y basta con corregir la causa y volver a ejecutarlo.
-
-**36. Reiniciar y comprobar.** Después de `sudo reboot`, se entra por SDDM a XFCE y se comprueba:
+**35. Reiniciar y comprobar.** Después de `sudo reboot`, se entra por SDDM a XFCE y se comprueba:
 
 ```bash
 midistro-info          # resumen del sistema con las secciones de los cuatro integrantes
-swapon --show          # zram0 y el swapfile (Tema 2)
+swapon --show          # /dev/zram0 con prioridad 100 y /swapfile con 10 (Tema 2)
 systemctl list-timers arenalos-memlog.timer   # timer del Tema 4
-sudo nft list ruleset | head                   # firewall del Tema 9
+systemctl is-active nftables                   # active (firewall del Tema 9)
+sudo nft list ruleset | head                   # reglas cargadas
 ls ~/.config/xfce4/panel/launcher-1{3,4,5,6}/  # los 4 lanzadores del panel (terminal, Firefox, Thunar, Mousepad)
 ```
 

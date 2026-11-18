@@ -87,7 +87,7 @@ if [ "$(prioridad_swap /dev/zram0)" = "$ZRAM_PRIO" ] && [ "$conf_cambiada" = 0 ]
 elif ! modulos_disponibles; then
     zram_omitido=1
     echo "  AVISO: el kernel en ejecución ($(uname -r)) se actualizó y sus módulos ya no están;"
-    echo "         zram queda configurado y se activará al reiniciar y volver a ejecutar install.sh"
+    echo "         zram queda configurado (zram-generator.conf y modules-load.d) y se activa al reiniciar"
 else
     modprobe zram
     # Dejar zram0 limpio: si quedó a medias (con disksize ya asignado por un intento
