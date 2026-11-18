@@ -16,12 +16,12 @@
 
 **Cuentas con privilegio mínimo.** Cada cuenta tiene solo lo que necesita:
 
-| Cuenta | Grupos | Puede | No puede |
-|---|---|---|---|
-| `user` | `wheel`, `arenalos-ssh` | Administrar con `sudo` y entrar por SSH con llave | Entrar al compartido **sin** sudo (no es del grupo) |
-| `operador` | `arenalos-ops`, `arenalos-datos` | Leer y escribir el compartido; 3 comandos con sudo | Otros comandos con sudo, entrar por SSH |
-| `auditor` | `systemd-journal` | **Leer** el compartido (por ACL) y los logs | Escribir, crear o borrar en el compartido; usar sudo |
-| `invitado` | — | Nada (shell `nologin`) | Iniciar sesión, listar el compartido, usar sudo |
+| Cuenta                                              | Grupos                           | Puede                                              | No puede                                             |
+|-----------------------------------------------------|----------------------------------|----------------------------------------------------|------------------------------------------------------|
+| `user` (la cuenta que corre `sudo bash install.sh`) | `wheel`, `arenalos-ssh`          | Administrar con `sudo` y entrar por SSH con llave  | Entrar al compartido **sin** sudo (no es del grupo)  |
+| `operador`                                          | `arenalos-ops`, `arenalos-datos` | Leer y escribir el compartido; 3 comandos con sudo | Otros comandos con sudo, entrar por SSH              |
+| `auditor`                                           | `systemd-journal`                | **Leer** el compartido (por ACL) y los logs        | Escribir, crear o borrar en el compartido; usar sudo |
+| `invitado`                                          | —                                | Nada (shell `nologin`)                             | Iniciar sesión, listar el compartido, usar sudo      |
 
 `operador`, `auditor` e `invitado` tienen la contraseña bloqueada (`passwd -l`).
 
@@ -55,7 +55,7 @@ El archivo se llama `10-…` porque en sshd **gana el primer valor leído** y lo
 - ICMPv6, que IPv6 necesita para descubrir vecinos;
 - los puertos de `define PUERTOS_TCP = { 22 }`, con conexiones nuevas limitadas a 30/min.
 
-Lo demás se descarta, se cuenta y se registra una muestra limitada (10/min) con el prefijo `arenalos-drop:`. `forward` también es `drop`, y `output` es `accept`. **Pendiente:** si otro tema del equipo necesita un puerto (por ejemplo, la activación por socket del Tema 4), basta con agregarlo al `define`.
+Lo demás se descarta, se cuenta y se registra una muestra limitada (10/min) con el prefijo `arenalos-drop:`. `forward` también es `drop`, y `output` es `accept`. Ningún otro tema del equipo abre puertos: el Tema 4 usa un timer (`arenalos-memlog.timer`), no activación por socket, así que la lista se queda solo con SSH. Si más adelante un tema necesitara un puerto, basta con agregarlo al `define`.
 
 **Ajuste del servicio.** El `nftables.service` de Arch es `oneshot` sin `RemainAfterExit`: carga las reglas y queda `inactive`, aunque el firewall esté activo. El drop-in agrega `RemainAfterExit=yes`, `ExecReload` y `ExecStop=nft flush ruleset`, para que `systemctl status/stop nftables` reflejen el estado real.
 
