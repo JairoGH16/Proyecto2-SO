@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+"""arranque-info: resumen de cómo arrancó esta máquina.
+
+Interfaces del SO: /sys/firmware/efi (existe solo si se arrancó en modo UEFI),
+/sys/firmware/efi/efivars/LoaderInfo-* (el gestor de arranque se anuncia ahí),
+/proc/cmdline (parámetros que el bootloader pasó al kernel), /proc/uptime
+(tiempo desde el arranque) y systemd: systemctl get-default (target por
+defecto) y systemd-analyze time (tiempos de las fases del arranque).
+
+Uso: arranque-info
+"""
+import glob
+import os
+import subprocess
+
+
+def leer(ruta):
+    with open(ruta) as f:
+        return f.read().strip()
+
+
+def systemd(*args):
+    try:
+        r = subprocess.run(args, capture_output=True, text=True, timeout=15)
+        salida = r.stdout.strip() or r.stderr.strip()
+        return salida.splitlines()[0] if salida else "(sin salida)"
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return "(no disponible)"
+
+
+def main():
+    uefi = os.path.isdir("/sys/firmware/efi")
+    print(f"Modo de firmware: {'UEFI' if uefi else 'BIOS (legacy)'}")
+    gestor = "no anunciado"
+    for ruta in glob.glob("/sys/firmware/efi/efivars/LoaderInfo-*"):
+        with open(ruta, "rb") as f:
+            gestor = f.read()[4:].decode("utf-16-le", "ignore").strip("\x00")
+    print(f"Gestor de arranque: {gestor}")
+    print(f"Parámetros del kernel: {leer('/proc/cmdline')}")
+    segundos = float(leer("/proc/uptime").split()[0])
+    print(f"Encendido hace: {int(segundos // 3600)} h {int((segundos % 3600) // 60)} min")
+    print(f"Target por defecto: {systemd('systemctl', 'get-default')}")
+    print(f"Fases del arranque: {systemd('systemd-analyze', 'time')}")
+
+
+if __name__ == "__main__":
+    main()
