@@ -28,9 +28,22 @@ put() {  # put <modo> <origen> <destino>
 }
 
 echo "[T8] Lista negra de módulos"
-if put 644 "$DIR/arenalos-blacklist.conf" /etc/modprobe.d/arenalos-blacklist.conf; then
-    # El hook "modconf" de mkinitcpio copia /etc/modprobe.d al initramfs
-    mkinitcpio -P >/dev/null && echo "  initramfs regenerado"
+BLACKLIST=/etc/modprobe.d/arenalos-blacklist.conf
+put 644 "$DIR/arenalos-blacklist.conf" "$BLACKLIST" || true   # put devuelve 1 si no hubo cambios
+# El hook "modconf" de mkinitcpio copia /etc/modprobe.d al initramfs. Se regenera
+# solo si la lista negra es más nueva que algún initramfs: cubre el caso en que
+# cambió y también el de una corrida anterior interrumpida antes de regenerarlo.
+regenerar=0
+for img in /boot/initramfs-*.img; do
+    if [ ! -e "$img" ] || [ "$BLACKLIST" -nt "$img" ]; then
+        regenerar=1
+    fi
+done
+if [ "$regenerar" = 1 ]; then
+    mkinitcpio -P >/dev/null   # oculta el detalle de la construcción; los errores van a stderr
+    echo "  initramfs regenerado"
+else
+    echo "  initramfs al día"
 fi
 
 echo "[T8] Regla udev + servicio + script de la USB"
