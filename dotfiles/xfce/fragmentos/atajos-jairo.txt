@@ -1,3 +1,0 @@
-<property name="&lt;Super&gt;t" type="string" value="xfce4-terminal --hold --title=procesos -e &quot;arenalos-procesos --top 15&quot;"/>
-<property name="&lt;Super&gt;c" type="string" value="xfce4-terminal --hold --title=cambios-contexto -e &quot;cambios-contexto -n 15 -t 2&quot;"/>
-<property name="&lt;Super&gt;o" type="string" value="xfce4-terminal --hold --title=presion-cpu -e &quot;presion-cpu -t 3&quot;"/>

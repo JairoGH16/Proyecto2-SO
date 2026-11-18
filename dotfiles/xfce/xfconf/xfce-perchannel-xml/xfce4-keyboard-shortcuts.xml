@@ -64,6 +64,15 @@
       <property name="&lt;Super&gt;u" type="string" value="xfce4-terminal --hold --title=usb-historial -e &quot;usb-historial -n 20&quot;"/>
       <property name="&lt;Shift&gt;&lt;Super&gt;p" type="string" value="xfce4-terminal --hold --title=puertos-abiertos -e &quot;sudo puertos-abiertos&quot;"/>
       <property name="&lt;Super&gt;m" type="string" value="xfce4-terminal --title=monitor-usb -e &quot;journalctl -f -t arenalos-usb&quot;"/>
+      <property name="&lt;Super&gt;t" type="string" value="xfce4-terminal --hold --title=procesos -e &quot;arenalos-procesos --top 15&quot;"/>
+      <property name="&lt;Super&gt;c" type="string" value="xfce4-terminal --hold --title=cambios-contexto -e &quot;cambios-contexto -n 15 -t 2&quot;"/>
+      <property name="&lt;Super&gt;o" type="string" value="xfce4-terminal --hold --title=presion-cpu -e &quot;presion-cpu -t 3&quot;"/>
+      <property name="&lt;Super&gt;y" type="string" value="xfce4-terminal --title=memoria -e &quot;memoria --top 15&quot;"/>
+      <property name="&lt;Super&gt;s" type="string" value="xfce4-terminal --hold --title=servicios-limites -e &quot;servicios-limites -a&quot;"/>
+      <property name="&lt;Super&gt;k" type="string" value="xfce4-terminal --hold --title=riesgo-oom -e &quot;riesgo-oom -n 15&quot;"/>
+      <property name="&lt;Super&gt;b" type="string" value="xfce4-terminal --hold --title=arranque-info -e &quot;arranque-info&quot;"/>
+      <property name="&lt;Super&gt;i" type="string" value="xfce4-terminal --hold --title=ipc-activo -e &quot;ipc-activo&quot;"/>
+      <property name="&lt;Super&gt;a" type="string" value="xfce4-terminal --hold --title=cadena-critica -e &quot;systemd-analyze critical-chain&quot;"/>
     </property>
   </property>
   <property name="xfwm4" type="empty">
