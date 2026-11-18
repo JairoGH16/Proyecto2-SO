@@ -294,3 +294,72 @@ Por qué: es el punto de partida limpio para la siguiente fase y para volver atr
 | Problema | Cómo se resolvió |
 | --- | --- |
 | Durante la instalación, en la consola de la VM, los caracteres escritos dejaron de verse hasta presionar Enter. La causa es desconocida, pero probablemente fue algún detalle de Oracle VirtualBox que desconocemos. | Se cerró la VM y se volvió a abrir. |
+
+## 4. Instalación de ArenalOS con `install.sh`
+
+Con Arch instalado a mano (pasos 1 a 31), el resto de ArenalOS se instala con un solo comando desde el repositorio. `install.sh` es idempotente: se puede correr varias veces sin que falle ni duplique líneas en los archivos de configuración.
+
+**32. Guest Additions y carpeta compartida.** El repositorio se clona en el anfitrión y la VM lo ve como carpeta compartida de VirtualBox:
+
+```bash
+sudo pacman -S --needed virtualbox-guest-utils
+sudo systemctl enable --now vboxservice
+sudo usermod -aG vboxsf user
+```
+
+En VirtualBox, en *Configuración → Carpetas compartidas*, se agrega la carpeta del clon con el nombre `arenalos` y la opción *Automontar*. Después de reiniciar, el repositorio aparece en `/media/sf_arenalos`.
+
+Por qué: así la VM siempre usa la versión del repositorio que está en el anfitrión, sin copiar archivos a mano. El grupo `vboxsf` es el que puede leer la carpeta compartida.
+
+**33. Snapshot `pre-instalador`.** Se toma antes de correr el instalador.
+
+Por qué: permite volver a un sistema sin ArenalOS y probar que `install.sh` funciona desde cero.
+
+**34. Ejecutar el instalador.**
+
+```bash
+sudo bash /media/sf_arenalos/install.sh
+```
+
+Por qué: el instalador escribe en `/etc`, `/boot` y `/usr`, y habilita servicios, así que necesita root. Se corre con `sudo` desde la cuenta normal (no como root directo) porque usa `SUDO_USER` para saber a qué usuario configurarle el escritorio, a quién dejar como administrador en el Tema 9 y con qué cuenta construir los paquetes propios (`makepkg` no corre como root). Toda la salida se guarda también en `docs/logs/install-<hostname>.log` y termina con `== Listo ==`.
+
+**Qué instala, en orden:**
+
+| Orden | Paso                         | Qué hace                                                                                                                       |
+|-------|------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| 1     | `NoExtract` en `pacman.conf` | Evita que `pacman` vuelva a poner los fondos por defecto de XFCE (va antes de instalar `xfce4`)                                |
+| 2     | Paquetes                     | `pacman -Syu` y luego instala todo `pkglist.txt` con `--needed` (se salta lo ya instalado)                                     |
+| 3     | Fondo                        | Deja solo la foto del volcán Arenal en `/usr/share/backgrounds/xfce/`                                                          |
+| 4     | Teclado                      | `localectl set-x11-keymap latam` para la sesión gráfica                                                                        |
+| 5     | Configuración de XFCE        | Copia los XML de `dotfiles/xfce/xfconf/` (atajos, workspaces, fondo, panel) al home del usuario                                |
+| —     | `chmod 755 /media`           | Deja entrar al usuario normal a `/media/sf_arenalos` (el grupo `vboxsf` no basta si `/media` está en 750)                      |
+| 6     | Pantalla de login            | Habilita SDDM                                                                                                                  |
+| 7     | Sesión por defecto           | XFCE en X11 como sesión de SDDM para el usuario                                                                                |
+| 8     | Temas 1 y 6                  | Hook `arenalos-explicitos.hook` de pacman y paquete propio `arenalos-procesos`, construido con `makepkg`                       |
+| 9     | Tema 2                       | Swapfile de 4 GiB y zram con `zram-generator` (zram con más prioridad que el swapfile)                                         |
+| 10    | Tema 4                       | Servicio y timer `arenalos-memlog`, limitados con `CPUQuota` y `MemoryMax`                                                     |
+| 11    | Tema 5                       | Compila `ipc_collector` en `/tmp/arenalos-ipc-build` (la carpeta compartida no deja ejecutar) y lo instala en `/usr/local/bin` |
+| 12    | Tema 7                       | Baja el `timeout` de systemd-boot de 3 a 1 s y enmascara `NetworkManager-wait-online.service`                                  |
+| 13    | Tema 8                       | Lista negra de módulos (regenera el initramfs si cambia) y regla udev que monta las USB en solo lectura                        |
+| 14    | Tema 9                       | Usuarios y grupos con privilegio mínimo, ACL, sudoers por comando, SSH solo con llave y firewall nftables                      |
+| 15    | Capa 3                       | Comandos libres de los cuatro integrantes (`cambios-contexto` como paquete propio) y `midistro-info` con sus módulos           |
+| 16    | Extras del escritorio        | Aplicaciones por defecto, fondo de SDDM y reloj Conky                                                                          |
+
+Los paquetes de cada paso están en `pkglist.txt`, con una sección por tema.
+
+**Antes de correrlo:** el Tema 9 deja SSH solo con llave. La consola de VirtualBox no se ve afectada, pero si se va a entrar por SSH, primero hay que copiar la llave pública a `~/.ssh/authorized_keys`.
+
+**35. Segunda ejecución.** Se vuelve a correr el mismo comando.
+
+Por qué: comprueba que el instalador es idempotente. La segunda vez `pacman` no instala nada nuevo (`there is nothing to do`), los paquetes propios solo se reinstalan y los instaladores de los temas informan `sin cambios`.
+
+**36. Reiniciar y comprobar.** Después de `sudo reboot`, se entra por SDDM a XFCE y se comprueba:
+
+```bash
+midistro-info          # resumen del sistema con las secciones de los cuatro integrantes
+swapon --show          # zram0 y el swapfile (Tema 2)
+systemctl list-timers arenalos-memlog.timer   # timer del Tema 4
+sudo nft list ruleset | head                   # firewall del Tema 9
+```
+
+Los atajos de [`cheatsheet.md`](cheatsheet.md) deben abrir cada comando en una terminal.
