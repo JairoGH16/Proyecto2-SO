@@ -41,35 +41,7 @@ Los módulos se buscan, en este orden, en `$MIDISTRO_MODULOS`, en `/usr/local/li
 
 La GPU es la clase PCI que empieza por `0x03` y la NPU la `0x1200`; el driver sale del enlace simbólico `driver`. Si no hay GPU o NPU, el módulo imprime "no detectada", y si no tienen driver, "sin driver cargado". La raíz de sysfs se puede cambiar con `MIDISTRO_SYSFS` para probar con un árbol falso: se probó con GPU con driver, GPU sin driver, NPU por PCI, NPU solo en `/sys/class/accel` y sin ningún dispositivo.
 
-**Ejemplo** (salida real en el PC de desarrollo, [`docs/logs/capa3/midistro-info.txt`](logs/capa3/midistro-info.txt); falta repetirla en la VM):
-```
-ArenalOS · midistro-info
-
-== Sistema ==
-  Equipo:       jairo-Inspiron-3593
-  Kernel:       7.0.0-42-generic
-  Encendido:    15 h 14 min
-  CPU:          Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz (8 CPU)
-  FS raíz:      /dev/nvme0n1p2 (ext4), 186.6 de 232.6 GiB usados (34.1 GiB libres)
-
-== Dispositivos ==
-  GPU:          Intel Corporation Iris Plus Graphics G7 [8086:8a52] en 0000:00:02.0 · driver: i915
-  GPU:          NVIDIA Corporation GP108M [GeForce MX230] [10de:1d11] en 0000:01:00.0 · driver: nvidia
-  NPU:          no detectada
-
-== Memoria ==
-  RAM:          5460 MiB usados de 7705 MiB (2245 MiB disponibles)
-  Swap:         2462 MiB usados de 4096 MiB
-                /swap.img (file, prioridad -1): 2462 MiB de 4096 MiB
-  zram:         no configurado
-  Fuente:       herramienta del Tema 2 (<repo>/src/memoria/memoria.py)
-
-== Procesos ==
-  Procesos:     349 (267 durmiendo, 81 inactivos (kernel), 1 ejecutando)
-  Planificador: EEVDF (kernel 7.0 >= 6.6)
-  Tiempo real:  95 % de la CPU (950000 de 1000000 µs)
-  Fuente:       herramienta del Tema 1 (<repo>/src/procesos/procesos.py)
-```
+**Ejemplo.** Pendiente: se agregará la salida real de la VM de ArenalOS, guardada en `docs/logs/capa3/midistro-info.txt`.
 
 ---
 
