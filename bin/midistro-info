@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""midistro-info: resumen del sistema ArenalOS (comando obligatorio de la Capa 3).
+
+Es un cargador: busca los modulos modulo_*.py, los ordena por su ORDEN y
+imprime la seccion() de cada uno. Cada integrante escribio un modulo:
+
+  modulo_sistema.py      (10)  equipo, kernel, uptime, CPU y FS raiz   Sebastian
+  modulo_dispositivos.py (20)  GPU y NPU con su driver                  Esteban
+  modulo_memoria.py      (30)  memoria, swap y zram                     Rafael
+  modulo_procesos.py     (40)  procesos, planificador y tiempo real     Jairo
+
+Solo usa la biblioteca estandar de Python 3 y lee /proc, /sys y llamadas al
+sistema. No llama a programas externos (ni subprocess ni os.system) ni
+depende de neofetch, fastfetch o parecidos.
+
+Donde busca los modulos, en este orden (usa la primera carpeta que tenga):
+  1. $MIDISTRO_MODULOS
+  2. /usr/local/lib/midistro-info   (donde los deja install.sh)
+  3. ../src/midistro-info           (relativo a este archivo, para probar desde el repo)
+
+Un modulo roto no tumba a los demas: se imprime una linea con el error y se
+sigue. Con MIDISTRO_DEBUG=1 se imprime ademas el traceback.
+
+Uso: midistro-info
+"""
+import glob
+import importlib.util
+import os
+import sys
+import traceback
+
+sys.dont_write_bytecode = True  # no dejar __pycache__ en /usr/local/lib ni en el repo
+
+
+def carpetas_candidatas():
+    if os.environ.get("MIDISTRO_MODULOS"):
+        yield os.environ["MIDISTRO_MODULOS"]
+    yield "/usr/local/lib/midistro-info"
+    aqui = os.path.dirname(os.path.realpath(__file__))
+    yield os.path.normpath(os.path.join(aqui, "..", "src", "midistro-info"))
+
+
+def buscar_modulos():
+    for carpeta in carpetas_candidatas():
+        archivos = sorted(glob.glob(os.path.join(carpeta, "modulo_*.py")))
+        if archivos:
+            return archivos
+    return []
+
+
+def nombre(ruta):
+    return os.path.splitext(os.path.basename(ruta))[0]
+
+
+def error(ruta, exc):
+    print(f"[{nombre(ruta)}] error: {type(exc).__name__}: {exc}")
+    if os.environ.get("MIDISTRO_DEBUG"):
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+
+def cargar(ruta):
+    spec = importlib.util.spec_from_file_location(nombre(ruta), ruta)
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] in ("-h", "--help"):
+        print(__doc__.strip())
+        return
+    archivos = buscar_modulos()
+    if not archivos:
+        sys.exit("midistro-info: no se encontro ningun modulo modulo_*.py")
+
+    cargados = []
+    for ruta in archivos:
+        try:
+            modulo = cargar(ruta)
+            cargados.append((getattr(modulo, "ORDEN", 999), ruta, modulo))
+        except Exception as exc:  # un modulo roto no debe tumbar a los demas
+            cargados.append((999, ruta, exc))
+
+    print("ArenalOS · midistro-info")
+    for _, ruta, modulo in sorted(cargados, key=lambda c: (c[0], c[1])):
+        print()
+        if isinstance(modulo, Exception):
+            error(ruta, modulo)
+            continue
+        try:
+            for linea in modulo.seccion():
+                print(linea)
+        except Exception as exc:
+            error(ruta, exc)
+
+
+if __name__ == "__main__":
+    main()
