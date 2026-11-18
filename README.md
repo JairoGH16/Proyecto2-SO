@@ -2,6 +2,8 @@
 
 ArenalOS es una distribución personalizada sobre Arch Linux, hecha para el proyecto 2 del curso de Sistemas Operativos (IC-6600) del TEC. Se instala a mano en una máquina virtual de VirtualBox y luego se configura con un solo instalador, `install.sh`, que deja el escritorio XFCE y lo que cada integrante hizo para los temas del curso.
 
+Informe final: [`docs/II-Proyecto_Informe-Final_ArenalOS.pdf`](docs/II-Proyecto_Informe-Final_ArenalOS.pdf)
+
 ## Equipo
 
 | Integrante | Temas de la Capa 2                                              |
