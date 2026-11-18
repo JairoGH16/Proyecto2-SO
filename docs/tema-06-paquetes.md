@@ -6,9 +6,9 @@ Responsable: Jairo González Hidalgo
 
 - `pacman/arenalos-explicitos.hook`: hook de pacman (ALPM) que, después de cualquier transacción que instale o elimine paquetes, escribe en `/var/lib/arenalos/explicitos.txt` la lista de paquetes instalados explícitamente (`pacman -Qqe`). Se instala en `/etc/pacman.d/hooks/`. La idea parte del ejemplo de la sección *Pacman/Tips and tricks* de la ArchWiki.
 - `pacman/PKGBUILD`: receta del paquete propio `arenalos-procesos` (versión 1.0-1, arquitectura `any`, depende de `python`), que empaqueta la herramienta del Tema 1 (`src/procesos/procesos.py`) como el comando `/usr/bin/arenalos-procesos`.
-- `scripts/install-procesos-paquetes.sh`, llamado desde `install.sh` antes del mensaje final: instala el hook con `install -Dm644` en `/etc/pacman.d/hooks/`, construye `arenalos-procesos` con `makepkg` en una carpeta temporal como el usuario normal y lo instala con `pacman -U`. Así el hook y el paquete propio quedan instalados al ejecutar `install.sh`, sin pasos manuales.
+- `scripts/install-procesos-paquetes.sh`, llamado desde `install.sh` como el primer paso de los temas, después de los siete pasos del escritorio: instala el hook con `install -Dm644` en `/etc/pacman.d/hooks/`, construye `arenalos-procesos` con `makepkg` en una carpeta temporal como el usuario normal y lo instala con `pacman -U`. Así el hook y el paquete propio quedan instalados al ejecutar `install.sh`, sin pasos manuales.
 - `pacman/cambios-contexto/PKGBUILD`: receta del segundo paquete propio, `arenalos-cambios-contexto` (versión 1.0-1, arquitectura `any`, depende de `python`), que empaqueta el comando libre `bin/cambios-contexto` de la Capa 3 como `/usr/bin/cambios-contexto`.
-- `scripts/install-comandos-capa3.sh`, llamado desde `install.sh` después de `install-procesos-paquetes.sh`: construye `arenalos-cambios-contexto` con `makepkg` en una carpeta temporal, lo instala con `pacman -U` y copia `presion-cpu` a `/usr/local/bin`.
+- `scripts/install-comandos-capa3.sh`, llamado desde `install.sh` en el bloque de la Capa 3, junto a los instaladores de los comandos de los demás integrantes: construye `arenalos-cambios-contexto` con `makepkg` en una carpeta temporal, lo instala con `pacman -U` y copia `presion-cpu` a `/usr/local/bin`.
 - Documentación del funcionamiento interno de pacman, con evidencia medida: base de datos local y de sincronización, resolución de dependencias, verificación de firmas, hooks y transacciones (secciones 3 a 5).
 
 ## 2. Concepto de Sistemas Operativos
@@ -125,6 +125,8 @@ En `pacman.log` las transacciones de reinstalación y de desinstalación de `tre
 `arenalos-procesos --top 5` funciona como comando. Tras `pacman -R` el archivo `/usr/bin/arenalos-procesos` ya no existe y el paquete salió de `explicitos.txt`.
 
 ### 4.6 Lista declarada frente a instalada
+
+Es la medición de la Fase 4, con el `pkglist.txt` de entonces: 11 paquetes en las secciones Base y herramientas, Escritorio y Temas 1 y 6. En la Fase 6 la lista creció con los paquetes de los Temas 2, 5, 8 y 9, los extras del escritorio, `sudo` y `acl`, así que estas cifras describen solo esa medición y no la lista actual.
 
 - **Explícitos que no están en `pkglist.txt` (22):** los del `pacstrap` de la Fase 1 (`base`, `linux-lts`, `linux-firmware`, `mkinitcpio`, `nano`, `networkmanager`, `sudo`), las Guest Additions (`virtualbox-guest-utils`) y los 14 miembros del grupo `xfce4` (`exo`, `garcon`, `thunar`, `thunar-volman`, `tumbler`, `xfce4-appfinder`, `xfce4-panel`, `xfce4-power-manager`, `xfce4-session`, `xfce4-settings`, `xfce4-terminal`, `xfconf`, `xfdesktop` y `xfwm4`).
 - **En `pkglist.txt` pero no instalados explícitamente (3):** `xfce4`, `python` y `xorg-xrandr`. Con `pacman -Qi` se comprobó, en la VM de la Fase 4, que `python` estaba instalado como dependencia de `gdb` y `gdb-common`, y `xorg-xrandr` como dependencia de `virtualbox-guest-utils`. Desde la base limpia con `install.sh`, `python` queda como paquete explícito (ver el log de verificación de la Fase 4).
