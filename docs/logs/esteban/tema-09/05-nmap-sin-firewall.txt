@@ -1,0 +1,36 @@
+### nmap SIN firewall (desde ArenalOS-scanner 10.10.10.2 -> 10.10.10.1) - Wed Nov 11 00:05:53 HAC 2026
+# En el objetivo escuchan: sshd (22) y un servicio de prueba (8080, systemd-socket-activate)
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 1)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0017s latency).
+Not shown: 1023 closed tcp ports (reset)
+PORT     STATE SERVICE    REASON
+22/tcp   open  ssh        syn-ack ttl 64
+8080/tcp open  http-proxy syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 4.29 seconds
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 2)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0024s latency).
+Not shown: 1023 closed tcp ports (reset)
+PORT     STATE SERVICE    REASON
+22/tcp   open  ssh        syn-ack ttl 64
+8080/tcp open  http-proxy syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 3.33 seconds
+
+$ nmap -sS -Pn -n --reason -p 1-1024,8080 10.10.10.1   (corrida 3)
+Nmap scan report for 10.10.10.1
+Host is up, received arp-response (0.0017s latency).
+Not shown: 1023 closed tcp ports (reset)
+PORT     STATE SERVICE    REASON
+22/tcp   open  ssh        syn-ack ttl 64
+8080/tcp open  http-proxy syn-ack ttl 64
+MAC Address: 08:00:27:B3:3F:BD (Oracle VirtualBox virtual NIC)
+Nmap done: 1 IP address (1 host up) scanned in 2.82 seconds
+
+$ ping -c 3 10.10.10.1
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 1.257/2.409/3.013/0.814 ms

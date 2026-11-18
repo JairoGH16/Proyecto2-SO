@@ -1,0 +1,46 @@
+### SSH DESPUES del endurecimiento - Tue Nov 10 23:58:29 HAC 2026
+
+$ sshd -t
+sintaxis OK
+
+$ sshd -T (valores efectivos)
+LoginGraceTime 30
+MaxAuthTries 3
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+X11Forwarding no
+AllowTcpForwarding no
+AllowAgentForwarding no
+LogLevel VERBOSE
+AllowGroups arenalos-ssh
+AuthenticationMethods publickey
+
+########## PRUEBAS DESDE OTRA MAQUINA (host Windows -> VM) ##########
+$ ssh -o PreferredAuthentications=none user@VM   (metodos ofrecidos: ya NO aparece password)
+user@127.0.0.1: Permission denied (publickey).
+
+$ ssh -i llave user@VM "whoami"   (POSITIVA: user con llave, en arenalos-ssh)
+conectado como user en arenalos-esteban
+exit=0
+
+$ ssh -i llave root@VM   (NEGATIVA: root con llave valida)
+root@127.0.0.1: Permission denied (publickey).
+exit=255
+
+$ ssh -i llave operador@VM   (NEGATIVA: llave valida pero no esta en AllowGroups)
+operador@127.0.0.1: Permission denied (publickey).
+exit=255
+
+$ ssh -o PubkeyAuthentication=no -o PreferredAuthentications=password user@VM   (NEGATIVA: con contrasena)
+user@127.0.0.1: Permission denied (publickey).
+exit=255
+
+$ journalctl -u sshd --since "-3min" | grep -E "not allowed|ROOT LOGIN|refused|Accepted publickey for user"   (rechazos y huella de la llave aceptada)
+Nov 10 23:58:30 arenalos-esteban sshd-session[901]: Accepted publickey for user from 10.0.2.2 port 49371 ssh2: ED25519 SHA256:kk0h5124vWjLUns3Ielc6ZRHV8ocyyNxHswzT0bKZrk
+Nov 10 23:58:31 arenalos-esteban sshd-session[915]: Accepted publickey for user from 10.0.2.2 port 50071 ssh2: ED25519 SHA256:kk0h5124vWjLUns3Ielc6ZRHV8ocyyNxHswzT0bKZrk
+Nov 10 23:58:31 arenalos-esteban sshd-session[923]: User root from 10.0.2.2 not allowed because none of user's groups are listed in AllowGroups
+Nov 10 23:58:31 arenalos-esteban sshd-session[925]: User operador from 10.0.2.2 not allowed because none of user's groups are listed in AllowGroups
+Nov 10 23:58:32 arenalos-esteban sshd-session[929]: Accepted publickey for user from 10.0.2.2 port 50080 ssh2: ED25519 SHA256:kk0h5124vWjLUns3Ielc6ZRHV8ocyyNxHswzT0bKZrk
+Nov 10 23:58:45 arenalos-esteban sshd-session[951]: Accepted publickey for user from 10.0.2.2 port 54193 ssh2: ED25519 SHA256:kk0h5124vWjLUns3Ielc6ZRHV8ocyyNxHswzT0bKZrk

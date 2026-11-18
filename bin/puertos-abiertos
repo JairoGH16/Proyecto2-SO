@@ -1,0 +1,77 @@
+#!/bin/bash
+# puertos-abiertos — puertos que escuchan en la máquina y si el firewall los deja pasar
+# ArenalOS · Capa 3 (comando libre) · Autor: Esteban · Relacionado con el Tema 9
+#
+# Interfaces del SO que usa:
+#   /proc/net/tcp, tcp6, udp, udp6   (procfs) sockets del kernel: estado, dirección, inodo
+#   /proc/<pid>/fd/*                 (procfs) qué proceso tiene abierto cada socket (socket:[inodo])
+#   /proc/<pid>/comm                 (procfs) nombre del proceso
+#   nft list ruleset                 (netfilter) reglas del firewall cargadas en el kernel
+#
+# Ejecutar con sudo para ver los procesos de todos los usuarios y leer el firewall.
+# Uso:  [sudo] puertos-abiertos        |   puertos-abiertos -h
+
+set -uo pipefail
+case "${1:-}" in -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; esac
+
+# --- 1) inodo de socket -> "proceso(pid)" leyendo /proc/<pid>/fd ---
+declare -A PROC
+for fd in /proc/[0-9]*/fd/*; do
+    l=$(readlink "$fd" 2>/dev/null) || continue
+    case "$l" in socket:\[*\])
+        ino=${l#socket:[}; ino=${ino%]}
+        pid=${fd#/proc/}; pid=${pid%%/*}
+        [ -z "${PROC[$ino]:-}" ] && PROC[$ino]="$(cat /proc/$pid/comm 2>/dev/null)($pid)" ;;
+    esac
+done
+
+# --- 2) puertos permitidos por el firewall ---
+FW="sin-firewall"; declare -A PERMIT
+if [ "$(id -u)" -ne 0 ]; then
+    FW="desconocido"
+elif reglas=$(nft list ruleset 2>/dev/null) && grep -q 'hook input.*policy drop' <<<"$reglas"; then
+    FW="drop"
+    # "tcp dport 22" o "tcp dport { 22, 8080 }" en reglas con "accept"
+    while read -r proto lista; do
+        for p in $(tr -d '{},' <<<"$lista"); do PERMIT["$proto/$p"]=1; done
+    done < <(grep -E '(tcp|udp) dport .*accept' <<<"$reglas" | sed -E 's/.*(tcp|udp) dport (\{[^}]*\}|[0-9]+).*/\1 \2/')
+fi
+
+# --- 3) direcciones hexadecimales de /proc/net -> texto ---
+ip4() { printf '%d.%d.%d.%d' 0x${1:6:2} 0x${1:4:2} 0x${1:2:2} 0x${1:0:2}; }   # little-endian
+ip6() {
+    case "$1" in
+        00000000000000000000000000000000) echo "::" ;;
+        00000000000000000000000001000000) echo "::1" ;;
+        0000000000000000FFFF0000*) echo "::ffff:$(ip4 "${1:24:8}")" ;;
+        *) local s="" w; for i in 0 8 16 24; do w=${1:$i:8}; s+="${w:6:2}${w:4:2}:${w:2:2}${w:0:2}:"; done; echo "${s%:}" | tr 'A-F' 'a-f' ;;
+    esac
+}
+
+printf '%-5s %-6s %-26s %-24s %s\n' "PROTO" "PUERTO" "ESCUCHA EN" "PROCESO(PID)" "FIREWALL"
+for f in tcp tcp6 udp udp6; do
+    [ -r /proc/net/$f ] || continue
+    # tcp: estado 0A = LISTEN ; udp: estado 07 = socket sin conectar (esperando datos)
+    estado=0A; [[ $f == udp* ]] && estado=07
+    tail -n +2 /proc/net/$f | while read -r _ local _ st _ _ _ _ _ ino _; do
+        [ "$st" = "$estado" ] || continue
+        addr=${local%:*}; port=$((16#${local#*:}))
+        if [[ $f == *6 ]]; then dir=$(ip6 "$addr"); else dir=$(ip4 "$addr"); fi
+        proto=${f%6}
+        case "$dir" in
+            127.*|::1) fw="solo local (no expuesto)" ;;
+            *) case "$FW" in
+                   drop) [ -n "${PERMIT[$proto/$port]:-}" ] && fw="PERMITIDO" || fw="bloqueado (drop)" ;;
+                   sin-firewall) fw="EXPUESTO: no hay firewall con policy drop" ;;
+                   *) fw="? (ejecute con sudo)" ;;
+               esac ;;
+        esac
+        printf '%-5s %-6s %-26s %-24s %s\n' "$f" "$port" "$dir" "${PROC[$ino]:-?}" "$fw"
+    done
+done | sort -k2,2n -k1,1
+echo
+case "$FW" in
+    drop) echo "Firewall: nftables con policy drop en input. Permitidos: ${!PERMIT[*]}" ;;
+    sin-firewall) echo "Firewall: no hay reglas con policy drop en input (todo lo que escucha está expuesto)" ;;
+    *) echo "Firewall: no se pudo leer (requiere root)" ;;
+esac

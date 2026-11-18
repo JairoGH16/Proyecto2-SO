@@ -36,3 +36,8 @@ stress-ng
 
 # --- Tema 5: Concurrencia e IPC ---
 strace
+
+# --- Temas 8 y 9 (E/S y dispositivos, protección y seguridad) ---
+# sshd para el endurecimiento de SSH y nft para el firewall (security/install.sh)
+openssh
+nftables

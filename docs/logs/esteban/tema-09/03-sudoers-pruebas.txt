@@ -1,0 +1,30 @@
+### sudoers restringido - Tue Nov 10 23:57:45 CST 2026
+
+$ visudo -c
+/etc/sudoers: parsed OK
+/etc/sudoers.d/50-arenalos-ops: parsed OK
+
+$ sudo -l -U operador
+User operador may run the following commands on arenalos-esteban:
+    (root) NOEXEC: NOPASSWD: /usr/bin/systemctl restart sshd.service, /usr/bin/systemctl is-active sshd.service nftables.service, /usr/bin/nft list ruleset
+$ sudo -l -U auditor
+User auditor is not allowed to run sudo on arenalos-esteban.
+$ sudo -l -U invitado
+User invitado is not allowed to run sudo on arenalos-esteban.
+
+--- permitidos (operador) ---
+operador  $ sudo -n /usr/bin/systemctl is-active sshd.service nftables.service; true -> active inactive  [exit=0]
+operador  $ sudo -n /usr/bin/systemctl restart sshd.service && echo reiniciado -> reiniciado  [exit=0]
+operador  $ sudo -n /usr/bin/nft list ruleset > /dev/null && echo nft-ok   -> nft-ok  [exit=0]
+--- NEGATIVOS: sudo -l <cmd> responde si el comando esta permitido (exit 1 = no) ---
+operador  $ sudo -n -l /usr/bin/systemctl restart sshd.service             -> /usr/bin/systemctl restart sshd.service  [exit=0]
+operador  $ sudo -n -l /usr/bin/systemctl restart NetworkManager.service   -> (sin salida: NO permitido)  [exit=1]
+operador  $ sudo -n -l /usr/bin/systemctl stop sshd.service                -> (sin salida: NO permitido)  [exit=1]
+operador  $ sudo -n -l /usr/bin/cat /etc/shadow                            -> (sin salida: NO permitido)  [exit=1]
+operador  $ sudo -n -l /usr/bin/bash                                       -> (sin salida: NO permitido)  [exit=1]
+operador  $ sudo -n -l /usr/bin/nft flush ruleset                          -> (sin salida: NO permitido)  [exit=1]
+--- NEGATIVOS: ejecucion real (sin contrasena ni permiso -> rechazado) ---
+operador  $ sudo -n /usr/bin/cat /etc/shadow                               -> sudo: a password is required  [exit=1]
+operador  $ sudo -n /usr/bin/nft flush ruleset                             -> sudo: a password is required  [exit=1]
+auditor   $ sudo -n /usr/bin/nft list ruleset                              -> sudo: a password is required  [exit=1]
+invitado  $ sudo -n true                                                   -> sudo: a password is required  [exit=1]

@@ -1,0 +1,66 @@
+#!/bin/bash
+# usb-historial — dispositivos USB conectados ahora + historial de conexiones
+# ArenalOS · Capa 3 (comando libre) · Autor: Esteban · Relacionado con el Tema 8
+#
+# Interfaces del SO que usa:
+#   /sys/bus/usb/devices/*   (sysfs) dispositivos USB: idVendor, idProduct, velocidad, driver
+#   /sys/block/*             (sysfs) discos y a qué dispositivo USB pertenecen
+#   /proc/mounts             (procfs) dónde y con qué opciones está montado cada disco
+#   /var/log/arenalos-usb.log  registro que escribe la regla udev del Tema 8
+#
+# Uso:  usb-historial [-n N]     (N = líneas del historial a mostrar, 10 por defecto)
+#       usb-historial -h
+
+set -uo pipefail
+N=10
+LOG=/var/log/arenalos-usb.log
+
+case "${1:-}" in
+    -h|--help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -n) N="${2:?falta N}" ;;
+    "") ;;
+    *) echo "opción desconocida: $1 (use -h)" >&2; exit 2 ;;
+esac
+
+leer() { [ -r "$1" ] && tr -d '\n' < "$1" || printf '?'; }
+
+echo "== Dispositivos USB conectados ahora (fuente: /sys/bus/usb/devices) =="
+printf '%-7s %-10s %-9s %-34s %s\n' "PUERTO" "ID" "VELOC." "DISPOSITIVO" "DRIVER / DISCO"
+encontrados=0
+for d in /sys/bus/usb/devices/*; do
+    [ -r "$d/idVendor" ] || continue
+    [ "$(leer "$d/bDeviceClass")" = "09" ] && continue          # 09 = hub (raíz o externo)
+    encontrados=$((encontrados + 1))
+    puerto=$(basename "$d")
+    id="$(leer "$d/idVendor"):$(leer "$d/idProduct")"
+    vel="$(leer "$d/speed")M"
+    nombre="$(leer "$d/manufacturer") $(leer "$d/product")"
+    # drivers de sus interfaces (p. ej. usb-storage, usbhid)
+    drv=$(for i in "$d"/"$puerto":*; do [ -L "$i/driver" ] && basename "$(readlink "$i/driver")"; done | sort -u | paste -sd, -)
+    # discos que cuelgan de este dispositivo USB
+    discos=""
+    for b in /sys/block/*; do
+        case "$(readlink -f "$b/device" 2>/dev/null)" in
+            "$(readlink -f "$d")"/*)
+                for p in "$b" "$b"/"$(basename "$b")"*; do
+                    [ -e "$p/dev" ] || continue
+                    dev=/dev/$(basename "$p")
+                    m=$(awk -v dv="$dev" '$1==dv{print $2" ("$4")"; exit}' /proc/mounts)
+                    discos+=" $dev${m:+ -> $m}"
+                done ;;
+        esac
+    done
+    printf '%-7s %-10s %-9s %-34.34s %s\n' "$puerto" "$id" "$vel" "$nombre" "${drv:--}${discos:+ |$discos}"
+done
+[ "$encontrados" -eq 0 ] && echo "(ninguno, aparte de los hubs)"
+
+echo
+echo "== Historial de almacenamiento USB (fuente: $LOG, regla udev del Tema 8) =="
+if [ -r "$LOG" ]; then
+    tail -n "$N" "$LOG"
+    echo
+    echo "Conexiones registradas por dispositivo (vendor:product):"
+    grep -o 'CONECTADO [^ ]* id=[0-9a-f?]*:[0-9a-f?]*' "$LOG" | awk '{print $3}' | sort | uniq -c | sed 's/id=//'
+else
+    echo "(sin registros: aún no se ha conectado ninguna USB o no está instalada la regla del Tema 8)"
+fi

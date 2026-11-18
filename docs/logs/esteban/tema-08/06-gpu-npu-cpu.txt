@@ -1,0 +1,134 @@
+### GPU / NPU / CPU - Tue Nov 10 23:45:50 CST 2026
+
+$ lspci -k
+00:00.0 Host bridge: Intel Corporation 440FX - 82441FX PMC [Natoma] (rev 02)
+	Kernel modules: intel_agp
+00:01.0 ISA bridge: Intel Corporation 82371SB PIIX3 ISA [Natoma/Triton II]
+00:02.0 VGA compatible controller: VMware SVGA II Adapter
+	Subsystem: VMware SVGA II Adapter
+	Kernel driver in use: vmwgfx
+	Kernel modules: vmwgfx
+00:03.0 Ethernet controller: Intel Corporation 82540EM Gigabit Ethernet Controller (rev 02)
+	Subsystem: Intel Corporation PRO/1000 MT Desktop Adapter
+	Kernel driver in use: e1000
+	Kernel modules: e1000
+00:04.0 System peripheral: InnoTek Systemberatung GmbH VirtualBox Guest Service
+	Kernel driver in use: vboxguest
+	Kernel modules: vboxguest
+00:05.0 Multimedia audio controller: Intel Corporation 82801AA AC'97 Audio Controller (rev 01)
+	Subsystem: Intel Corporation Device 0000
+	Kernel driver in use: snd_intel8x0
+	Kernel modules: snd_intel8x0
+00:06.0 USB controller: Apple Inc. KeyLargo/Intrepid USB
+	Kernel driver in use: ohci-pci
+	Kernel modules: ohci_pci
+00:07.0 Bridge: Intel Corporation 82371AB/EB/MB PIIX4 ACPI (rev 08)
+	Kernel driver in use: piix4_smbus
+	Kernel modules: i2c_piix4
+00:0c.0 USB controller: Intel Corporation 7 Series/C210 Series Chipset Family USB xHCI Host Controller
+	Kernel driver in use: xhci_hcd
+	Kernel modules: xhci_pci
+00:0d.0 SATA controller: Intel Corporation 82801HM/HEM (ICH8M/ICH8M-E) SATA Controller [AHCI mode] (rev 02)
+	Kernel driver in use: ahci
+	Kernel modules: ahci
+
+$ lspci -nn -v -s 00:02.0   (GPU: IDs, BARs de memoria, IRQ)
+00:02.0 VGA compatible controller [0300]: VMware SVGA II Adapter [15ad:0405] (prog-if 00 [VGA controller])
+	Subsystem: VMware SVGA II Adapter [15ad:0405]
+	Flags: bus master, fast devsel, latency 64, IRQ 18
+	I/O ports at c170 [size=16]
+	Memory at e0000000 (32-bit, prefetchable) [size=128M]
+	Memory at e8400000 (32-bit, non-prefetchable) [size=2M]
+	Expansion ROM at 000c0000 [virtual] [disabled] [size=128K]
+	Kernel driver in use: vmwgfx
+	Kernel modules: vmwgfx
+
+
+$ readlink /sys/bus/pci/devices/0000:00:02.0/driver
+/sys/bus/pci/drivers/vmwgfx
+
+$ ls /sys/class/drm  y  ls -l /dev/dri
+card0
+card0-Virtual-1
+card0-Virtual-2
+card0-Virtual-3
+card0-Virtual-4
+card0-Virtual-5
+card0-Virtual-6
+card0-Virtual-7
+card0-Virtual-8
+renderD128
+version
+total 0
+drwxr-xr-x 2 root root         80 Nov 10 23:30 by-path
+crw-rw---- 1 root video  226,   0 Nov 10 23:30 card0
+crw-rw-rw- 1 root render 226, 128 Nov 10 23:30 renderD128
+
+$ cat /sys/class/drm/card0/device/{vendor,device}
+0x15ad
+0x0405
+
+$ modinfo vmwgfx | grep -E "^(description|author|license|alias|depends)"
+license:        GPL and additional rights
+description:    Standalone drm driver for the VMware SVGA device
+author:         VMware Inc. and others
+depends:        ttm,drm_ttm_helper
+pci:v000015ADd00000406sv*sd*bc*sc*i*
+pci:v000015ADd00000405sv*sd*bc*sc*i*
+
+$ lsmod | grep -E "^(vmwgfx|drm)"
+vmwgfx                491520  0
+drm_ttm_helper         16384  2 vmwgfx
+ttm                   126976  2 vmwgfx,drm_ttm_helper
+
+$ dmesg | grep -i vmwgfx
+
+$ grep vmwgfx /proc/interrupts
+           CPU0       CPU1       
+ 18:          0          0  IO-APIC  18-fasteoi   vmwgfx
+
+########## NPU ##########
+$ ls /sys/class/accel /dev/accel   (subsistema "accel" del kernel para NPUs)
+ls: cannot access '/dev/accel': No such file or directory
+/sys/class/accel:
+$ lspci -nn | grep -iE "processing accelerator|npu|neural|vpu"   (clase PCI 1200 = Processing accelerator)
+(ninguno) -> NPU no detectada
+$ modinfo -F description intel_vpu amdxdna 2>&1
+Driver for Intel NPU (Neural Processing Unit)
+amdxdna driver
+
+########## CPU ##########
+$ grep -m1 "model name" /proc/cpuinfo; nproc; lscpu-like desde /proc y /sys
+model name	: 12th Gen Intel(R) Core(TM) i5-12450H
+nproc=2
+hipervisor: oracle
+      2 aes
+      2 avx2
+      2 hypervisor
+$ cat /sys/devices/system/cpu/possible /sys/devices/system/cpu/online
+0-1
+0-1
+
+$ journalctl -k -b | grep -i vmwgfx   (dmesg del arranque)
+[    3.703962] archlinux kernel: vmwgfx 0000:00:02.0: vgaarb: deactivate vga console
+[    3.709381] archlinux kernel: vmwgfx 0000:00:02.0: [drm] FIFO at 0x00000000e8400000 size is 2048 KiB
+[    3.709822] archlinux kernel: vmwgfx 0000:00:02.0: [drm] VRAM at 0x00000000e0000000 size is 131072 KiB
+[    3.710120] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Running on SVGA version 2.
+[    3.710427] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Capabilities: rect copy, cursor, cursor bypass, cursor bypass 2, alpha cursor, extended fifo, pitchlock, irq mask, gmr, traces, gmr2, screen object 2, command buffers, command buffers 2, gbobject, cap2 register, 
+[    3.710671] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Capabilities2: cursor mob, 
+[    3.710916] archlinux kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* vmwgfx seems to be running on an unsupported hypervisor.
+[    3.711279] archlinux kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* This configuration is likely broken.
+[    3.711521] archlinux kernel: vmwgfx 0000:00:02.0: [drm] *ERROR* Please switch to a supported graphics device to avoid problems.
+[    3.711817] archlinux kernel: vmwgfx 0000:00:02.0: [drm] DMA map mode: Caching DMA mappings.
+[    3.712093] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Legacy memory limits: VRAM = 131072 KiB, FIFO = 2048 KiB, surface = 393216 KiB
+[    3.712319] archlinux kernel: vmwgfx 0000:00:02.0: [drm] MOB limits: max mob size = 1048576 KiB, max mob pages = 262144
+[    3.712535] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Max GMR ids is 8192
+[    3.712752] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Max number of GMR pages is 1048576
+[    3.712993] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Maximum display memory size is 131072 KiB
+[    3.777701] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Screen Target display unit initialized
+[    3.778161] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Fifo max 0x00200000 min 0x00001000 cap 0x00000355
+[    3.781868] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Using command buffers with DMA pool.
+[    3.782445] archlinux kernel: vmwgfx 0000:00:02.0: [drm] Available shader model: Legacy.
+[    3.782806] archlinux kernel: [drm] Initialized vmwgfx 2.21.0 for 0000:00:02.0 on minor 0
+[    3.787889] archlinux kernel: fbcon: vmwgfxdrmfb (fb0) is primary device
+[    3.804744] archlinux kernel: vmwgfx 0000:00:02.0: [drm] fb0: vmwgfxdrmfb frame buffer device

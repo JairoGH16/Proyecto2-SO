@@ -1,0 +1,33 @@
+### nft list ruleset con contadores tras 3 escaneos + ping + 2 conexiones de prueba - Wed Nov 11 00:08:15 HAC 2026
+$ sudo nft list ruleset
+table inet arenalos {
+	chain input {
+		type filter hook input priority filter; policy drop;
+		ct state invalid counter packets 0 bytes 0 drop comment "invalidos"
+		ct state { established, related } counter packets 154 bytes 21998 accept comment "conexiones-establecidas"
+		iif "lo" accept comment "loopback"
+		ip protocol icmp icmp type echo-request limit rate 5/second burst 5 packets counter packets 1 bytes 84 accept comment "ping"
+		meta l4proto ipv6-icmp counter packets 0 bytes 0 accept comment "icmpv6"
+		tcp dport 22 ct state new limit rate 30/minute burst 30 packets counter packets 19 bytes 852 accept comment "servicios-permitidos"
+		limit rate 10/minute burst 5 packets log prefix "arenalos-drop: " level info
+		counter packets 6150 bytes 270964 comment "descartados-por-politica"
+	}
+
+	chain forward {
+		type filter hook forward priority filter; policy drop;
+	}
+
+	chain output {
+		type filter hook output priority filter; policy accept;
+	}
+}
+
+$ journalctl -k --grep arenalos-drop | tail -5   (muestra limitada de paquetes descartados)
+Nov 11 00:07:38 arenalos-esteban kernel: arenalos-drop: IN=enp0s8 OUT= MAC=08:00:27:b3:3f:bd:08:00:27:22:dd:e8:08:00 SRC=10.10.10.2 DST=10.10.10.1 LEN=44 TOS=0x00 PREC=0x00 TTL=42 ID=54689 PROTO=TCP SPT=58436 DPT=143 WINDOW=1024 RES=0x00 SYN URGP=0 
+Nov 11 00:07:43 arenalos-esteban kernel: arenalos-drop: IN=enp0s8 OUT= MAC=08:00:27:b3:3f:bd:08:00:27:22:dd:e8:08:00 SRC=10.10.10.2 DST=10.10.10.1 LEN=44 TOS=0x00 PREC=0x00 TTL=46 ID=55803 PROTO=TCP SPT=58436 DPT=132 WINDOW=1024 RES=0x00 SYN URGP=0 
+Nov 11 00:07:49 arenalos-esteban kernel: arenalos-drop: IN=enp0s8 OUT= MAC=08:00:27:b3:3f:bd:08:00:27:22:dd:e8:08:00 SRC=10.10.10.2 DST=10.10.10.1 LEN=44 TOS=0x00 PREC=0x00 TTL=56 ID=20226 PROTO=TCP SPT=62346 DPT=592 WINDOW=1024 RES=0x00 SYN URGP=0 
+Nov 11 00:07:56 arenalos-esteban kernel: arenalos-drop: IN=enp0s8 OUT= MAC=08:00:27:b3:3f:bd:08:00:27:22:dd:e8:08:00 SRC=10.10.10.2 DST=10.10.10.1 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=52196 DF PROTO=TCP SPT=43746 DPT=8080 WINDOW=64240 RES=0x00 SYN URGP=0 
+Nov 11 00:08:12 arenalos-esteban kernel: arenalos-drop: IN=enp0s8 OUT= MAC=ff:ff:ff:ff:ff:ff:08:00:27:22:dd:e8:08:00 SRC=0.0.0.0 DST=255.255.255.255 LEN=328 TOS=0x00 PREC=0xC0 TTL=64 ID=0 PROTO=UDP SPT=68 DPT=67 LEN=308 
+
+$ journalctl -k --grep arenalos-drop | wc -l   (lineas registradas; el log esta limitado a 10/min)
+11

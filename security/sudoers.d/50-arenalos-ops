@@ -1,0 +1,25 @@
+# /etc/sudoers.d/50-arenalos-ops
+# ArenalOS · Tema 9 (Protección y seguridad) · Responsable: Esteban
+#
+# sudo restringido por COMANDO EXACTO para el grupo arenalos-ops (cuenta "operador").
+# Un operador puede reiniciar SSH y consultar el estado del firewall, y nada más:
+# no puede abrir una shell de root, leer /etc/shadow ni reiniciar otros servicios.
+#
+# Decisiones:
+#  - Comandos con argumentos completos: sudoers solo permite exactamente esa línea.
+#    "systemctl restart NetworkManager" NO coincide con la regla y se rechaza.
+#  - Ruta absoluta (/usr/bin/...): evita que alguien ponga otro "systemctl" en su PATH.
+#  - NOEXEC: el comando no puede lanzar otros programas. Así se bloquean escapes
+#    clásicos (p. ej. un pager "less" que permite "!sh" con privilegios de root;
+#    ver GTFOBins "systemctl"/"journalctl"). Por eso tampoco se permite journalctl.
+#  - NOPASSWD solo porque los 3 comandos son acotados e inofensivos; la cuenta
+#    operador no tiene contraseña (passwd -l), así que no podría escribirla.
+#
+# Validar antes de instalar:  visudo -cf security/sudoers.d/50-arenalos-ops
+# Ver lo permitido:           sudo -l -U operador
+
+Cmnd_Alias ARENALOS_OPS = /usr/bin/systemctl restart sshd.service, \
+                          /usr/bin/systemctl is-active sshd.service nftables.service, \
+                          /usr/bin/nft list ruleset
+
+%arenalos-ops ALL=(root) NOPASSWD: NOEXEC: ARENALOS_OPS

@@ -1,0 +1,66 @@
+#!/bin/bash
+# /usr/local/lib/arenalos/arenalos-usb-handler
+# ArenalOS · Tema 8 (E/S y dispositivos) · Responsable: Esteban
+#
+# Uso: arenalos-usb-handler add|remove <dispositivo>   (p. ej. sdb1)
+# Lo ejecuta arenalos-usb@.service, iniciado por la regla udev 99-arenalos-usb.rules.
+#
+# add:    lee las propiedades del dispositivo desde la base de datos de udev y
+#         desde /sys, lo registra y lo monta en solo lectura.
+# remove: desmonta, borra el punto de montaje y registra la desconexión.
+#
+# El registro va al journal (journalctl -u 'arenalos-usb@*' o -t arenalos-usb)
+# y a /var/log/arenalos-usb.log.
+
+set -euo pipefail
+
+ACTION="${1:?uso: $0 add|remove <dispositivo>}"
+DEV="${2:?falta el dispositivo (p. ej. sdb1)}"
+NODE="/dev/$DEV"
+MNT="/media/usb-$DEV"
+LOG=/var/log/arenalos-usb.log
+
+log() {
+    local msg="$*"
+    echo "$msg"                                   # stdout -> journal del servicio
+    logger -t arenalos-usb -- "$msg" || true      # syslog tag "arenalos-usb"
+    printf '%s %s\n' "$(date '+%F %T')" "$msg" >> "$LOG"
+}
+
+case "$ACTION" in
+add)
+    # Propiedades que udev calculó para el dispositivo (ID_VENDOR_ID, ID_FS_TYPE, ...)
+    eval "$(udevadm info --query=property --export --name="$NODE")"
+    # Tamaño: /sys/class/block/<dev>/size está en sectores de 512 bytes
+    sectors=$(cat "/sys/class/block/$DEV/size")
+    size_mb=$(( sectors * 512 / 1024 / 1024 ))
+
+    opts="ro,nosuid,nodev,noexec"
+    case "${ID_FS_TYPE:-}" in
+        vfat|exfat|ntfs|ntfs3) opts="$opts,umask=0022" ;;  # sin permisos POSIX: legible para todos
+    esac
+
+    mkdir -p "$MNT"
+    if mount -t "${ID_FS_TYPE:-auto}" -o "$opts" "$NODE" "$MNT"; then
+        estado="montado en $MNT ($opts)"
+    else
+        rmdir "$MNT" 2>/dev/null || true
+        estado="NO se pudo montar"
+    fi
+
+    log "CONECTADO $DEV id=${ID_VENDOR_ID:-?}:${ID_MODEL_ID:-?}" \
+        "vendor='${ID_VENDOR:-?}' modelo='${ID_MODEL:-?}' serie=${ID_SERIAL_SHORT:-?}" \
+        "fs=${ID_FS_TYPE:-?} etiqueta='${ID_FS_LABEL:-}' tamano=${size_mb}MiB -> $estado"
+    ;;
+remove)
+    if mountpoint -q "$MNT"; then
+        umount -l "$MNT"          # -l: el dispositivo ya pudo haber desaparecido
+    fi
+    rmdir "$MNT" 2>/dev/null || true
+    log "DESCONECTADO $DEV -> desmontado $MNT"
+    ;;
+*)
+    echo "acción desconocida: $ACTION" >&2
+    exit 2
+    ;;
+esac

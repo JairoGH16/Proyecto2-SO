@@ -1,0 +1,21 @@
+# /etc/udev/rules.d/99-arenalos-usb.rules
+# ArenalOS · Tema 8 (E/S y dispositivos) · Responsable: Esteban
+#
+# Cuando se conecta un almacenamiento USB que contiene un sistema de archivos,
+# udev le pide a systemd que inicie arenalos-usb@<dispositivo>.service, que
+# registra el dispositivo y lo monta en SOLO LECTURA (ro,nosuid,nodev,noexec)
+# en /media/usb-<dispositivo>.
+#
+# Por qué no se usa RUN+="mount ...": systemd-udevd ejecuta RUN en un espacio
+# de montaje privado (PrivateMounts=yes) y mata los procesos largos, así que un
+# montaje hecho desde RUN no sería visible para el resto del sistema. La forma
+# correcta es TAG+="systemd" + SYSTEMD_WANTS (ver udev(7) y systemd.device(5)).
+#
+# Variables usadas (se ven con: udevadm info /dev/sdb1):
+#   SUBSYSTEM=="block"            dispositivo de bloques (disco o partición)
+#   ENV{ID_BUS}=="usb"            conectado por USB (lo pone el builtin path_id/usb_id)
+#   ENV{ID_FS_USAGE}=="filesystem" blkid detectó un sistema de archivos montable
+#   %k                            nombre del kernel del dispositivo (p. ej. sdb1)
+
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_BUS}=="usb", ENV{ID_FS_USAGE}=="filesystem", \
+  TAG+="systemd", ENV{SYSTEMD_WANTS}+="arenalos-usb@%k.service"

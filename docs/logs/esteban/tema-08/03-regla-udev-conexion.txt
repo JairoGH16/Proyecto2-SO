@@ -1,0 +1,167 @@
+### Conexion de la USB Kingston (0951:1666) - Tue Nov 10 23:34:53 CST 2026
+
+$ dmesg (capturado con dmesg -w durante la conexion)
+[  234.841219] usb 3-1: new SuperSpeed USB device number 2 using xhci_hcd
+[  234.888106] usb 3-1: New USB device found, idVendor=0951, idProduct=1666, bcdDevice= 1.10
+[  234.888116] usb 3-1: New USB device strings: Mfr=2, Product=3, SerialNumber=4
+[  234.888119] usb 3-1: Product: DataTraveler 3.0
+[  234.888121] usb 3-1: Manufacturer: Kingston
+[  234.888123] usb 3-1: SerialNumber: E0D55E6C09F21821295307B6
+[  234.938133] usb-storage 3-1:1.0: USB Mass Storage device detected
+[  234.946595] scsi host2: usb-storage 3-1:1.0
+[  234.948768] usbcore: registered new interface driver usb-storage
+[  234.975679] usbcore: registered new interface driver uas
+[  237.119518] scsi 2:0:0:0: Direct-Access     Kingston DataTraveler 3.0 0000 PQ: 0 ANSI: 6
+[  237.141606] sd 2:0:0:0: [sdb] 121077760 512-byte logical blocks: (62.0 GB/57.7 GiB)
+[  237.148580] sd 2:0:0:0: [sdb] Write Protect is off
+[  237.148590] sd 2:0:0:0: [sdb] Mode Sense: 23 00 00 00
+[  237.156243] sd 2:0:0:0: [sdb] Write cache: disabled, read cache: enabled, doesn't support DPO or FUA
+[  237.252032]  sdb: sdb1
+[  237.252978] sd 2:0:0:0: [sdb] Attached SCSI removable disk
+
+$ udevadm monitor --kernel --udev --property   (eventos de la particion sdb1)
+KERNEL[237.219891] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1 (block)
+ACTION=add
+DEVPATH=/devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1
+SUBSYSTEM=block
+DEVNAME=/dev/sdb1
+DEVTYPE=partition
+DISKSEQ=4
+PARTN=1
+PARTUUID=03da472f-01
+SEQNUM=2564
+MAJOR=8
+MINOR=17
+
+UDEV  [237.637488] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1 (block)
+ACTION=add
+DEVPATH=/devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1
+SUBSYSTEM=block
+DEVNAME=/dev/sdb1
+DEVTYPE=partition
+DISKSEQ=4
+PARTN=1
+PARTUUID=03da472f-01
+SEQNUM=2564
+USEC_INITIALIZED=237220176
+ID_BUS=usb
+ID_MODEL=DataTraveler_3.0
+ID_MODEL_ENC=DataTraveler\x203.0
+ID_MODEL_ID=1666
+ID_SERIAL=Kingston_DataTraveler_3.0_E0D55E6C09F21821295307B6-0:0
+ID_SERIAL_SHORT=E0D55E6C09F21821295307B6
+ID_VENDOR=Kingston
+ID_VENDOR_ENC=Kingston
+ID_VENDOR_ID=0951
+ID_REVISION=0000
+ID_TYPE=disk
+ID_INSTANCE=0:0
+ID_USB_MODEL=DataTraveler_3.0
+ID_USB_MODEL_ENC=DataTraveler\x203.0
+ID_USB_MODEL_ID=1666
+ID_USB_SERIAL=Kingston_DataTraveler_3.0_E0D55E6C09F21821295307B6-0:0
+ID_USB_SERIAL_SHORT=E0D55E6C09F21821295307B6
+ID_USB_VENDOR=Kingston
+ID_USB_VENDOR_ENC=Kingston
+ID_USB_VENDOR_ID=0951
+ID_USB_REVISION=0000
+ID_USB_TYPE=disk
+ID_USB_INSTANCE=0:0
+ID_USB_INTERFACES=:080650:
+ID_USB_INTERFACE_NUM=00
+ID_USB_DRIVER=usb-storage
+ID_PATH_WITH_USB_REVISION=pci-0000:00:0c.0-usbv3-0:1:1.0-scsi-0:0:0:0
+ID_PATH=pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0
+ID_PATH_TAG=pci-0000_00_0c_0-usb-0_1_1_0-scsi-0_0_0_0
+ID_PART_TABLE_UUID=03da472f
+ID_PART_TABLE_TYPE=dos
+ID_INTEGRATION=external
+.PART_SUFFIX=-part1
+ID_FS_LABEL=KINGSTON
+ID_FS_LABEL_ENC=KINGSTON
+ID_FS_UUID=1447-7C2F
+ID_FS_UUID_ENC=1447-7C2F
+ID_FS_VERSION=FAT32
+ID_FS_BLOCKSIZE=32768
+ID_FS_SIZE=61991780352
+ID_FS_TYPE=vfat
+ID_FS_USAGE=filesystem
+ID_PART_ENTRY_SCHEME=dos
+ID_PART_ENTRY_UUID=03da472f-01
+ID_PART_ENTRY_TYPE=0xc
+ID_PART_ENTRY_FLAGS=0x80
+ID_PART_ENTRY_NUMBER=1
+ID_PART_ENTRY_OFFSET=64
+ID_PART_ENTRY_SIZE=121077696
+ID_PART_ENTRY_DISK=8:16
+SYSTEMD_WANTS=arenalos-usb@sdb1.service
+MAJOR=8
+MINOR=17
+DEVLINKS=/dev/disk/by-path/pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0-part/by-label/KINGSTON /dev/disk/by-path/pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0-part/by-partnum/1 /dev/disk/by-path/pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0-part/by-uuid/1447-7C2F /dev/disk/by-label/KINGSTON /dev/disk/by-partuuid/03da472f-01 /dev/disk/by-diskseq/4-part1 /dev/disk/by-path/pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0-part/by-partuuid/03da472f-01 /dev/disk/by-id/usb-Kingston_DataTraveler_3.0_E0D55E6C09F21821295307B6-0:0-part1 /dev/disk/by-path/pci-0000:00:0c.0-usb-0:1:1.0-scsi-0:0:0:0-part1 /dev/disk/by-uuid/1447-7C2F /dev/disk/by-path/pci-0000:00:0c.0-usbv3-0:1:1.0-scsi-0:0:0:0-part1
+TAGS=:systemd:
+CURRENT_TAGS=:systemd:
+
+$ udevadm monitor: resumen de TODOS los eventos (una linea por evento)
+KERNEL[234.859884] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1 (usb)
+KERNEL[234.869524] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0 (usb)
+KERNEL[234.869619] bind     /devices/pci0000:00/0000:00:0c.0/usb3/3-1 (usb)
+KERNEL[234.905989] add      /devices/virtual/workqueue/scsi_tmf_2 (workqueue)
+KERNEL[234.913228] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2 (scsi)
+KERNEL[234.913422] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/scsi_host/host2 (scsi_host)
+KERNEL[234.913591] bind     /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0 (usb)
+KERNEL[234.913739] add      /bus/usb/drivers/usb-storage (drivers)
+KERNEL[234.915306] add      /module/usb_storage (module)
+KERNEL[234.934469] add      /bus/usb/drivers/uas (drivers)
+KERNEL[234.943479] add      /module/uas (module)
+KERNEL[237.088827] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0 (scsi)
+KERNEL[237.089147] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0 (scsi)
+KERNEL[237.089206] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/scsi_disk/2:0:0:0 (scsi_disk)
+KERNEL[237.089480] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/scsi_device/2:0:0:0 (scsi_device)
+KERNEL[237.091178] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/bsg/2:0:0:0 (bsg)
+KERNEL[237.152144] add      /devices/virtual/bdi/8:16 (bdi)
+KERNEL[237.219802] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb (block)
+KERNEL[237.219891] add      /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0/block/sdb/sdb1 (block)
+KERNEL[237.220249] bind     /devices/pci0000:00/0000:00:0c.0/usb3/3-1/3-1:1.0/host2/target2:0:0/2:0:0:0 (scsi)
+
+$ udevadm info /dev/sdb1 | grep -E "ID_BUS|ID_FS_USAGE|ID_FS_TYPE|ID_VENDOR_ID|ID_MODEL_ID|SYSTEMD_WANTS|TAGS"
+E: ID_BUS=usb
+E: ID_MODEL_ID=1666
+E: ID_VENDOR_ID=0951
+E: ID_FS_TYPE=vfat
+E: ID_FS_USAGE=filesystem
+E: SYSTEMD_WANTS=arenalos-usb@sdb1.service
+E: TAGS=:systemd:
+
+$ udevadm test (que reglas aplican a sdb1)
+Reading rules file: /etc/udev/rules.d/99-arenalos-usb.rules
+  SYSTEMD_WANTS=arenalos-usb@sdb1.service
+
+$ systemctl status arenalos-usb@sdb1.service
+● arenalos-usb@sdb1.service - ArenalOS: registrar y montar en solo lectura la USB sdb1
+     Loaded: loaded (/etc/systemd/system/arenalos-usb@.service; static)
+     Active: active (exited) since Tue 2026-11-10 23:34:27 CST; 26s ago
+ Invocation: 917e24f0b063420799900629dd7854f5
+    Process: 552 ExecStart=/usr/local/lib/arenalos/arenalos-usb-handler add sdb1 (code=exited, status=0/SUCCESS)
+   Main PID: 552 (code=exited, status=0/SUCCESS)
+   Mem peak: 2M
+        CPU: 58ms
+
+Nov 10 23:34:26 arenalos-esteban systemd[1]: Starting ArenalOS: registrar y montar en solo lectura la USB sdb1...
+Nov 10 23:34:27 arenalos-esteban arenalos-usb-handler[552]: CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+Nov 10 23:34:27 arenalos-esteban arenalos-usb[557]: CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+Nov 10 23:34:27 arenalos-esteban systemd[1]: Finished ArenalOS: registrar y montar en solo lectura la USB sdb1.
+
+$ findmnt /media/usb-sdb1
+TARGET          SOURCE    FSTYPE OPTIONS
+/media/usb-sdb1 /dev/sdb1 vfat   ro,nosuid,nodev,noexec,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro
+
+$ touch /media/usb-sdb1/prueba   (prueba negativa: debe fallar por ro)
+touch: cannot touch '/media/usb-sdb1/prueba': Read-only file system
+exit=1
+
+$ lsusb -t
+/:  Bus 001.Port 001: Dev 001, Class=root_hub, Driver=ohci-pci/12p, 12M
+    |__ Port 001: Dev 002, If 0, Class=Human Interface Device, Driver=usbhid, 12M
+/:  Bus 002.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/8p, 480M
+/:  Bus 003.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/6p, 5000M
+    |__ Port 001: Dev 002, If 0, Class=Mass Storage, Driver=usb-storage, 5000M

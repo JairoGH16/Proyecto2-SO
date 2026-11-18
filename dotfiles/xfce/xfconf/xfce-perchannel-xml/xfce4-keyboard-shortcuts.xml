@@ -61,6 +61,9 @@
       <property name="override" type="bool" value="true"/>
       <property name="&lt;Super&gt;d" type="string" value="xfce4-appfinder"/>
       <property name="&lt;Super&gt;Return" type="string" value="xfce4-terminal"/>
+      <property name="&lt;Super&gt;u" type="string" value="xfce4-terminal --hold --title=usb-historial -e &quot;usb-historial -n 20&quot;"/>
+      <property name="&lt;Shift&gt;&lt;Super&gt;p" type="string" value="xfce4-terminal --hold --title=puertos-abiertos -e &quot;sudo puertos-abiertos&quot;"/>
+      <property name="&lt;Super&gt;m" type="string" value="xfce4-terminal --title=monitor-usb -e &quot;journalctl -f -t arenalos-usb&quot;"/>
     </property>
   </property>
   <property name="xfwm4" type="empty">

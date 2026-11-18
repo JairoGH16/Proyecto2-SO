@@ -1,0 +1,26 @@
+### Comando libre: puertos-abiertos - Wed Nov 11 00:09:30 HAC 2026
+$ sudo puertos-abiertos   (con firewall activo; 8080 tiene un servicio de prueba escuchando)
+PROTO PUERTO ESCUCHA EN                 PROCESO(PID)             FIREWALL
+tcp   22     0.0.0.0                    sshd(307)                PERMITIDO
+tcp6  22     ::                         sshd(307)                PERMITIDO
+tcp6  8080   ::                         systemd-socket-(443)     bloqueado (drop)
+
+Firewall: nftables con policy drop en input. Permitidos: tcp/22
+
+$ puertos-abiertos   (sin sudo: no puede leer procesos ajenos ni el firewall)
+PROTO PUERTO ESCUCHA EN                 PROCESO(PID)             FIREWALL
+tcp   22     0.0.0.0                    ?                        ? (ejecute con sudo)
+tcp6  22     ::                         ?                        ? (ejecute con sudo)
+tcp6  8080   ::                         ?                        ? (ejecute con sudo)
+
+Firewall: no se pudo leer (requiere root)
+
+$ sudo systemctl stop nftables && sudo puertos-abiertos   (firewall apagado: todo queda expuesto)
+PROTO PUERTO ESCUCHA EN                 PROCESO(PID)             FIREWALL
+tcp   22     0.0.0.0                    sshd(307)                EXPUESTO: no hay firewall con policy drop
+tcp6  22     ::                         sshd(307)                EXPUESTO: no hay firewall con policy drop
+tcp6  8080   ::                         systemd-socket-(443)     EXPUESTO: no hay firewall con policy drop
+
+Firewall: no hay reglas con policy drop en input (todo lo que escucha está expuesto)
+
+(firewall reactivado: active)

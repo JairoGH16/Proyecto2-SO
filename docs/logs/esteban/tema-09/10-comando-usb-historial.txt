@@ -1,0 +1,28 @@
+### Comando libre: usb-historial - Wed Nov 11 00:10:20 HAC 2026
+$ usb-historial   (con la Kingston conectada a la VM)
+== Dispositivos USB conectados ahora (fuente: /sys/bus/usb/devices) ==
+PUERTO  ID         VELOC.    DISPOSITIVO                        DRIVER / DISCO
+1-1     80ee:0021  12M       VirtualBox USB Tablet              usbhid
+3-1     0951:1666  5000M     Kingston DataTraveler 3.0          usb-storage | /dev/sdb /dev/sdb1 -> /media/usb-sdb1 (ro,nosuid,nodev,noexec,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro)
+
+== Historial de almacenamiento USB (fuente: /var/log/arenalos-usb.log, regla udev del Tema 8) ==
+2026-11-10 23:34:27 CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+2026-11-10 23:44:54 DESCONECTADO sdb1 -> desmontado /media/usb-sdb1
+2026-11-11 00:10:12 CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+
+Conexiones registradas por dispositivo (vendor:product):
+      2 0951:1666
+
+$ usb-historial -n 4   (despues de desconectarla)
+== Dispositivos USB conectados ahora (fuente: /sys/bus/usb/devices) ==
+PUERTO  ID         VELOC.    DISPOSITIVO                        DRIVER / DISCO
+1-1     80ee:0021  12M       VirtualBox USB Tablet              usbhid
+
+== Historial de almacenamiento USB (fuente: /var/log/arenalos-usb.log, regla udev del Tema 8) ==
+2026-11-10 23:34:27 CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+2026-11-10 23:44:54 DESCONECTADO sdb1 -> desmontado /media/usb-sdb1
+2026-11-11 00:10:12 CONECTADO sdb1 id=0951:1666 vendor='Kingston' modelo='DataTraveler_3.0' serie=E0D55E6C09F21821295307B6 fs=vfat etiqueta='KINGSTON' tamano=59119MiB -> montado en /media/usb-sdb1 (ro,nosuid,nodev,noexec,umask=0022)
+2026-11-11 00:10:21 DESCONECTADO sdb1 -> desmontado /media/usb-sdb1
+
+Conexiones registradas por dispositivo (vendor:product):
+      2 0951:1666
