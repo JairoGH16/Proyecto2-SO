@@ -21,6 +21,7 @@ pacman-contrib
 # --- Extras del escritorio ---
 firefox
 vlc
+vlc-plugin-ffmpeg
 ristretto
 xfce4-docklike-plugin
 xfce4-screensaver
