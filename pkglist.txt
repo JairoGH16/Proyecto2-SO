@@ -17,3 +17,11 @@ ttf-dejavu
 # --- Temas 1 y 6 (procesos y paquetes) ---
 python
 pacman-contrib
+
+# --- Extras del escritorio ---
+firefox
+vlc
+ristretto
+xfce4-docklike-plugin
+xfce4-screensaver
+conky

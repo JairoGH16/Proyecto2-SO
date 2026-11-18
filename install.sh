@@ -60,5 +60,7 @@ chown -R sddm:sddm /var/lib/sddm
 export REPO_DIR TARGET_USER TARGET_HOME
 bash "$REPO_DIR/scripts/install-procesos-paquetes.sh"
 bash "$REPO_DIR/scripts/install-comandos-capa3.sh"
+# --- Extras del escritorio ---
+bash "$REPO_DIR/scripts/install-extras.sh"
 
 echo "== Listo =="
