@@ -1,0 +1,15 @@
+$ cambios-contexto -n 5 -t 2   (en reposo)
+    PID     VOL/s     INV/s   %INV  COMANDO
+    370      29.0      19.5   40.2  Xorg
+   3548      20.0      10.5   34.4  xfce4-terminal
+     30      10.0       0.0    0.0  kworker/u10:0-events_power_efficient
+     27       7.0       0.0    0.0  kworker/1:0-events
+    438       5.0       0.0    0.0  psimon
+
+$ cambios-contexto -n 5 -t 2   (dos procesos en la CPU 0)
+    PID     VOL/s     INV/s   %INV  COMANDO
+   3929       0.0     162.5  100.0  sh
+   3930       0.0     161.5  100.0  sh
+    370      33.5      11.5   25.6  Xorg
+   2957       9.5      13.0   57.8  at-spi2-registr
+   2970      14.5       4.0   21.6  xfwm4

@@ -1,0 +1,47 @@
+Name            : arenalos-procesos
+Version         : 1.0-1
+Description     : Herramienta de ArenalOS: lista procesos desde /proc y cambia prioridad y politica
+Architecture    : any
+URL             : None
+Licenses        : custom
+Groups          : None
+Provides        : None
+Depends On      : python
+Optional Deps   : None
+Required By     : None
+Optional For    : None
+Conflicts With  : None
+Replaces        : None
+Installed Size  : 3.99 KiB
+Packager        : Unknown Packager
+Build Date      : Sun 15 Nov 2026 10:25:01 PM CST
+Install Date    : Sun 15 Nov 2026 10:25:23 PM CST
+Install Reason  : Explicitly installed
+Install Script  : No
+Validated By    : None
+
+arenalos-procesos /usr/
+arenalos-procesos /usr/bin/
+arenalos-procesos /usr/bin/arenalos-procesos
+/usr/bin/arenalos-procesos is owned by arenalos-procesos 1.0-1
+    PID    PPID E   NI POLITICA   %CPU  COMANDO
+    361     359 S    0 OTHER       1.0  Xorg
+      1       0 S    0 OTHER       0.0  systemd
+      2       0 S    0 OTHER       0.0  kthreadd
+      3       2 S    0 OTHER       0.0  pool_workqueue_release
+      4       2 I  -20 OTHER       0.0  kworker/R-rcu_gp
+arenalos-procesos
+checking dependencies...
+
+Packages (1) arenalos-procesos-1.0-1
+
+Total Removed Size:  0.00 MiB
+
+:: Do you want to remove these packages? [Y/n] 
+:: Processing package changes...
+removing arenalos-procesos...
+:: Running post-transaction hooks...
+(1/2) Arming ConditionNeedsUpdate...
+(2/2) ArenalOS: actualizando la lista de paquetes explicitos
+ls: cannot access '/usr/bin/arenalos-procesos': No such file or directory
+arenalos-procesos ya no esta en explicitos.txt

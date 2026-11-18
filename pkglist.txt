@@ -13,3 +13,7 @@ xorg-setxkbmap
 xfce4
 sddm
 ttf-dejavu
+
+# --- Temas 1 y 6 (procesos y paquetes) ---
+python
+pacman-contrib

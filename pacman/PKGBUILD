@@ -1,0 +1,13 @@
+pkgname=arenalos-procesos
+pkgver=1.0
+pkgrel=1
+pkgdesc="Herramienta de ArenalOS: lista procesos desde /proc y cambia prioridad y politica"
+arch=('any')
+license=('custom')
+depends=('python')
+source=('procesos.py')
+sha256sums=('SKIP')
+
+package() {
+  install -Dm755 "$srcdir/procesos.py" "$pkgdir/usr/bin/arenalos-procesos"
+}

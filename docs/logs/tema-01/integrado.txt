@@ -1,0 +1,14 @@
+== Comando instalado por el paquete ==
+/usr/bin/arenalos-procesos
+arenalos-procesos 1.0-1
+== arenalos-procesos --top 5 ==
+    PID    PPID E   NI POLITICA   %CPU  COMANDO
+      1       0 S    0 OTHER       0.0  systemd
+      2       0 S    0 OTHER       0.0  kthreadd
+      3       2 S    0 OTHER       0.0  pool_workqueue_release
+      4       2 I  -20 OTHER       0.0  kworker/R-rcu_gp
+      5       2 I  -20 OTHER       0.0  kworker/R-sync_wq
+== Experimento nice 0 10 (30 s) ==
+NICE   TICKS      %MEDIDO    %ESPERADO 
+0      2694       90.3       90.3      
+10     289        9.7        9.7       

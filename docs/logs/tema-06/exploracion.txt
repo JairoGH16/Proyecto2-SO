@@ -1,0 +1,103 @@
+== Base de datos local (paquetes instalados) ==
+409
+acl-2.4.0-1
+adwaita-cursors-51.0-1
+adwaita-fonts-51.0-2
+== Archivos de un paquete instalado (sudo) ==
+desc
+files
+mtree
+== Bases de datos de sincronizacion ==
+total 8996
+-rw-r--r-- 1 root root  130378 Nov 15 14:19 core.db
+-rw-r--r-- 1 root root 9080325 Nov 15 21:09 extra.db
+== Verificacion de firmas ==
+SigLevel    = Required DatabaseOptional
+LocalFileSigLevel = Optional
+/etc/pacman.d/gnupg/pubring.gpg
+-------------------------------
+pub   rsa4096 2026-11-10 [SC]
+      8FD4BF65DCD89C036D8A8713B1E1A5761B98CEF4
+uid           [ultimate] Pacman Keyring Master Key <pacman@localhost>
+
+pub   rsa2048 2011-08-12 [SC]
+      02FD1C7A934E614545849F19A6234074498E9CEE
+== Hooks del sistema ==
+ls: cannot access '/etc/pacman.d/hooks': No such file or directory
+/usr/share/libalpm/hooks:
+10-glibc-locale-gen.hook
+10-glibc-remove-locale-archive.hook
+11-glibc-ldconfig.hook
+11-glibc-remove-ldconfig-cache.hook
+12-glibc-iconvconfig.hook
+12-glibc-remove-iconvconfig-cache.hook
+20-systemd-sysusers.hook
+21-systemd-tmpfiles.hook
+25-systemd-binfmt.hook
+25-systemd-catalog.hook
+25-systemd-hwdb.hook
+25-systemd-sysctl.hook
+30-systemd-daemon-reload-system.hook
+30-systemd-daemon-reload-user.hook
+30-update-mime-database.hook
+35-systemd-enqueue-marked.hook
+35-systemd-udev-reload.hook
+35-systemd-update.hook
+36-systemd-modules-load.hook
+40-fontconfig-config.hook
+40-update-ca-trust.hook
+60-depmod.hook
+60-mkinitcpio-remove.hook
+90-mkinitcpio-install.hook
+dbus-reload.hook
+dconf-update.hook
+detect-old-perl-modules.hook
+fontconfig.hook
+gdk-pixbuf-query-loaders.hook
+gdk-pixbuf-remove-loaders-cache.hook
+gio-querymodules.hook
+gio-remove-module-cache.hook
+glib-compile-schemas.hook
+glib-remove-compiled-schemas.hook
+gtk-query-immodules-3.0.hook
+gtk-remove-immodules-cache.hook
+gtk-update-icon-cache.hook
+man-db-remove-cache.hook
+shared-mime-info-remove-cache.hook
+texinfo-install.hook
+texinfo-remove.hook
+update-desktop-database.hook
+== Informacion de sudo ==
+Name            : sudo
+Version         : 1.9.17.p2-7
+Description     : Give certain users the ability to run some commands as root
+Architecture    : x86_64
+URL             : https://www.sudo.ws/sudo/
+Licenses        : custom
+Groups          : None
+Provides        : None
+Depends On      : glibc  openssl  pam  libldap  zlib  libcrypto.so=4-64  libssl.so=4-64
+Optional Deps   : None
+Required By     : base-devel
+Optional For    : pacman-contrib
+Conflicts With  : None
+Replaces        : None
+Installed Size  : 7.85 MiB
+Packager        : Pierre Schmitz <pierre@archlinux.org>
+Build Date      : Sat 24 Oct 2026 08:00:56 AM CST
+Install Date    : Tue 10 Nov 2026 04:14:30 PM CST
+Install Reason  : Explicitly installed
+Install Script  : No
+Validated By    : Signature
+
+sudo /etc/
+sudo /etc/pam.d/
+sudo /etc/pam.d/sudo
+sudo /etc/sudo.conf
+sudo /etc/sudo_logsrvd.conf
+sudo /etc/sudoers
+sudo /etc/sudoers.d/
+sudo /usr/
+sudo /usr/bin/
+sudo /usr/bin/cvtsudoers
+/usr/bin/sudo is owned by sudo 1.9.17.p2-7
